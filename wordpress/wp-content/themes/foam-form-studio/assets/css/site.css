@@ -1,0 +1,1022 @@
+:root {
+	--foam-color-bg: #fbfaf7;
+	--foam-color-surface: #ffffff;
+	--foam-color-text: #111111;
+	--foam-color-muted: #616161;
+	--foam-color-border: #ece8e0;
+	--foam-color-accent: #111111;
+	--foam-color-accent-soft: #f2ede4;
+	--foam-color-plant: #9fb88a;
+	--foam-color-plant-deep: #657752;
+	--foam-shadow-card: 0 20px 60px rgba(17, 17, 17, 0.05);
+	--foam-radius-card: 28px;
+	--foam-content-width: 1180px;
+	--foam-header-width: 1240px;
+}
+
+body {
+	background:
+		radial-gradient(circle at top right, rgba(159, 184, 138, 0.08), transparent 26%),
+		linear-gradient(180deg, #ffffff 0%, #fbfaf7 65%, #ffffff 100%);
+	color: var(--foam-color-text);
+}
+
+body.admin-bar .foam-site-header {
+	top: 32px;
+}
+
+body,
+button,
+input,
+select,
+textarea {
+	font-family: "Helvetica Neue", Arial, sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.site-title,
+.elementor-heading-title {
+	font-family: "Iowan Old Style", Georgia, serif;
+	letter-spacing: -0.03em;
+}
+
+.site-content,
+.ast-container {
+	max-width: var(--foam-content-width);
+}
+
+.ast-container {
+	width: min(100% - 48px, var(--foam-content-width)) !important;
+	margin-left: auto !important;
+	margin-right: auto !important;
+}
+
+#masthead,
+.site-header-primary-section-left,
+.site-header-primary-section-right,
+.ast-builder-layout-element[data-section="title_tagline"],
+.ast-builder-layout-element[data-section="section-header-menu"],
+.ast-builder-layout-element[data-section="section-header-account"] {
+	display: none !important;
+}
+
+#content.site-content {
+	padding-top: 118px;
+}
+
+.foam-site-header {
+	position: sticky;
+	top: 0;
+	z-index: 1000;
+	padding: 18px 20px 0;
+	background: linear-gradient(180deg, rgba(251, 250, 247, 0.96), rgba(251, 250, 247, 0.78) 72%, rgba(251, 250, 247, 0));
+	backdrop-filter: blur(16px);
+}
+
+.foam-site-header__inner {
+	width: min(100%, var(--foam-header-width));
+	margin: 0 auto;
+	display: grid;
+	grid-template-columns: auto 1fr auto;
+	align-items: center;
+	gap: 26px;
+	padding: 16px 20px;
+	border: 1px solid rgba(236, 232, 224, 0.95);
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.86);
+	box-shadow: 0 16px 45px rgba(17, 17, 17, 0.06);
+}
+
+.foam-site-brand {
+	display: inline-flex;
+	align-items: center;
+	gap: 12px;
+	text-decoration: none;
+	color: var(--foam-color-text);
+}
+
+.foam-site-brand__mark {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 38px;
+	height: 38px;
+	border-radius: 50%;
+	background: linear-gradient(180deg, #1a1a1a, #383838);
+	color: #fff;
+	font-family: "Iowan Old Style", Georgia, serif;
+	font-size: 1.25rem;
+}
+
+.foam-site-brand__wordmark {
+	font-family: "Iowan Old Style", Georgia, serif;
+	font-size: 1.35rem;
+	letter-spacing: -0.04em;
+}
+
+.foam-site-nav,
+.foam-site-actions {
+	display: flex;
+	align-items: center;
+}
+
+.foam-site-nav {
+	justify-content: center;
+	gap: 6px;
+}
+
+.foam-site-nav a,
+.foam-nav-group__toggle,
+.foam-account-pill {
+	height: 46px;
+	border-radius: 999px;
+	font-size: 0.96rem;
+	text-decoration: none;
+	transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.foam-site-nav a,
+.foam-nav-group__toggle {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0 18px;
+	color: var(--foam-color-text);
+	border: 1px solid transparent;
+	background: transparent;
+}
+
+.foam-site-nav a:hover,
+.foam-site-nav a:focus-visible,
+.foam-nav-group__toggle:hover,
+.foam-nav-group__toggle:focus-visible {
+	background: rgba(17, 17, 17, 0.04);
+	border-color: rgba(236, 232, 224, 0.9);
+	transform: translateY(-1px);
+}
+
+.foam-site-actions {
+	justify-content: flex-end;
+	gap: 10px;
+}
+
+.foam-nav-group {
+	position: relative;
+}
+
+.foam-nav-group__toggle {
+	border: 1px solid rgba(236, 232, 224, 0.95);
+	background: rgba(255, 255, 255, 0.9);
+	padding: 0 18px;
+	cursor: pointer;
+}
+
+.foam-nav-panel {
+	position: absolute;
+	top: calc(100% + 14px);
+	right: 0;
+	min-width: 500px;
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 22px;
+	padding: 22px;
+	border-radius: 28px;
+	border: 1px solid rgba(236, 232, 224, 0.95);
+	background: rgba(255, 255, 255, 0.97);
+	box-shadow: 0 22px 60px rgba(17, 17, 17, 0.12);
+	backdrop-filter: blur(20px);
+	opacity: 0;
+	visibility: hidden;
+	transform: translateY(10px);
+	pointer-events: none;
+	transition: opacity 0.22s ease, transform 0.22s ease, visibility 0.22s ease;
+}
+
+.foam-nav-panel--compact {
+	min-width: 280px;
+	grid-template-columns: 1fr;
+}
+
+.foam-nav-group:hover .foam-nav-panel,
+.foam-nav-group:focus-within .foam-nav-panel {
+	opacity: 1;
+	visibility: visible;
+	transform: translateY(0);
+	pointer-events: auto;
+}
+
+.foam-nav-panel__column {
+	display: grid;
+	gap: 10px;
+}
+
+.foam-nav-panel__label {
+	font-size: 0.75rem;
+	font-weight: 700;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: var(--foam-color-muted);
+}
+
+.foam-nav-panel a {
+	padding: 10px 12px;
+	border-radius: 16px;
+	text-decoration: none;
+	color: var(--foam-color-text);
+	background: transparent;
+}
+
+.foam-nav-panel a:hover,
+.foam-nav-panel a:focus-visible {
+	background: #f6f2eb;
+}
+
+.foam-account-pill {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	padding: 0 18px 0 8px;
+	color: var(--foam-color-text);
+	background: #efefef;
+	border: 1px solid #e2e2e2;
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65);
+}
+
+.foam-account-pill:hover,
+.foam-account-pill:focus-visible {
+	background: #e8e8e8;
+	transform: translateY(-1px);
+}
+
+.foam-account-pill__avatar {
+	width: 30px;
+	height: 30px;
+	border-radius: 50%;
+	background: linear-gradient(180deg, #d6d6d6, #c5c5c5);
+	position: relative;
+}
+
+.foam-account-pill__avatar::before,
+.foam-account-pill__avatar::after {
+	content: "";
+	position: absolute;
+	left: 50%;
+	transform: translateX(-50%);
+	background: #ffffff;
+}
+
+.foam-account-pill__avatar::before {
+	top: 6px;
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+}
+
+.foam-account-pill__avatar::after {
+	bottom: 5px;
+	width: 16px;
+	height: 8px;
+	border-radius: 999px 999px 6px 6px;
+}
+
+.foam-section-card,
+.single-product div.product .woocommerce-tabs,
+.single-product div.product .summary {
+	background: var(--foam-color-surface);
+	border: 1px solid var(--foam-color-border);
+	border-radius: var(--foam-radius-card);
+	box-shadow: var(--foam-shadow-card);
+}
+
+.foam-home-section,
+.foam-ai-shell,
+.foam-contact-form,
+.foam-shop-toolbar,
+.foam-specifications-shell,
+.foam-how-shell,
+.foam-product-visual-story,
+.foam-faq-shell,
+.foam-fbt-shell,
+.foam-final-cta,
+.foam-benefits-shell,
+.foam-before-after-shell,
+.foam-layers-shell,
+.foam-product-scenes-shell {
+	padding: 42px;
+	margin: 34px 0;
+}
+
+.foam-hero-shell {
+	padding: 56px 0 30px;
+}
+
+.foam-hero-grid {
+	display: grid;
+	grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+	gap: 32px;
+	align-items: stretch;
+}
+
+.foam-hero-copy,
+.foam-hero-visual {
+	border-radius: 34px;
+	min-height: 620px;
+	overflow: hidden;
+}
+
+.foam-hero-copy {
+	padding: 56px;
+	background:
+		radial-gradient(circle at top left, rgba(159, 184, 138, 0.14), transparent 34%),
+		linear-gradient(180deg, #ffffff, #fbfaf7);
+	border: 1px solid var(--foam-color-border);
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.foam-hero-visual {
+	position: relative;
+	border: 1px solid var(--foam-color-border);
+	background:
+		linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.12)),
+		url("/wp-content/uploads/2026/06/sonovafurn-hero-black-corduroy.png") center/cover;
+}
+
+.foam-hero-visual::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(90deg, rgba(0, 0, 0, 0.02), transparent 42%);
+}
+
+.foam-hero-eyebrow,
+.foam-kicker {
+	display: inline-flex;
+	align-items: center;
+	padding: 8px 14px;
+	border-radius: 999px;
+	background: rgba(159, 184, 138, 0.14);
+	color: var(--foam-color-plant-deep);
+	font-size: 11px;
+	text-transform: uppercase;
+	letter-spacing: 0.16em;
+	font-weight: 700;
+}
+
+.foam-kicker {
+	margin-bottom: 14px;
+}
+
+.foam-hero-copy h1,
+.foam-section-heading h1,
+.foam-section-heading h2 {
+	margin: 0 0 18px;
+	line-height: 0.96;
+}
+
+.foam-hero-copy h1 {
+	font-size: clamp(3rem, 5vw, 5.3rem);
+	max-width: 10ch;
+}
+
+.foam-section-heading h1,
+.foam-section-heading h2 {
+	font-size: clamp(2.2rem, 3.2vw, 3.6rem);
+}
+
+.foam-hero-copy p,
+.foam-section-heading p,
+.foam-collection-card strong,
+.foam-collection-card em,
+.foam-home-feature span,
+.foam-review-card p,
+.foam-icon-card p,
+.foam-financing-option,
+.foam-contact-form p,
+.foam-spec-grid span {
+	font-size: 1rem;
+	line-height: 1.8;
+	color: var(--foam-color-muted);
+}
+
+.entry-content > * {
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.foam-hero-copy > div:first-child p {
+	max-width: 32rem;
+}
+
+.foam-hero-actions,
+.foam-final-cta__actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 14px;
+	margin-top: 24px;
+}
+
+.foam-button,
+.elementor-button,
+.single_add_to_cart_button,
+.woocommerce ul.products li.product .button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 15px 26px;
+	border-radius: 999px;
+	background: var(--foam-color-accent);
+	color: #fff;
+	font-weight: 600;
+	border: 1px solid var(--foam-color-accent);
+	transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.foam-button:hover,
+.single_add_to_cart_button:hover {
+	background: #252525;
+	transform: translateY(-1px);
+}
+
+.foam-button--secondary {
+	background: #fff;
+	color: var(--foam-color-text);
+	border-color: var(--foam-color-border);
+}
+
+.foam-hero-metrics {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 14px;
+}
+
+.foam-hero-metrics div {
+	padding: 18px;
+	border-radius: 24px;
+	background: rgba(255, 255, 255, 0.86);
+	border: 1px solid var(--foam-color-border);
+	backdrop-filter: blur(6px);
+}
+
+.foam-hero-metrics strong {
+	display: block;
+	font-size: 1.45rem;
+	margin-bottom: 8px;
+}
+
+.foam-floating-card {
+	position: absolute;
+	right: 28px;
+	bottom: 28px;
+	max-width: 315px;
+	padding: 26px;
+	background: rgba(255, 255, 255, 0.92);
+	backdrop-filter: blur(12px);
+	border-radius: 24px;
+	border: 1px solid rgba(236, 232, 224, 0.9);
+	z-index: 2;
+}
+
+.foam-floating-card span {
+	display: inline-block;
+	margin-bottom: 12px;
+	padding: 6px 10px;
+	background: #111;
+	color: #fff;
+	border-radius: 999px;
+	font-size: 11px;
+	text-transform: uppercase;
+	letter-spacing: 0.1em;
+	font-weight: 700;
+}
+
+.foam-home-features {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: 16px;
+	margin: 0 0 36px;
+}
+
+.foam-home-feature {
+	padding: 20px 22px;
+	border: 1px solid var(--foam-color-border);
+	border-radius: 24px;
+	background: rgba(255, 255, 255, 0.9);
+	display: flex;
+	align-items: center;
+	gap: 14px;
+}
+
+.foam-home-feature__icon {
+	display: inline-flex;
+	width: 42px;
+	height: 42px;
+	align-items: center;
+	justify-content: center;
+	border-radius: 999px;
+	border: 1px solid var(--foam-color-border);
+	font-size: 12px;
+	font-weight: 700;
+	color: var(--foam-color-text);
+}
+
+.foam-home-feature strong {
+	display: block;
+	margin-bottom: 4px;
+	font-size: 1rem;
+}
+
+.foam-home-feature span {
+	display: block;
+	font-size: 0.92rem;
+	line-height: 1.55;
+}
+
+.foam-collection-grid {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: 22px;
+}
+
+.foam-collection-card {
+	position: relative;
+	min-height: 360px;
+	padding: 26px;
+	border-radius: 30px;
+	overflow: hidden;
+	text-decoration: none;
+	color: #fff;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+	background-size: cover;
+	background-position: center;
+	transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.foam-collection-card::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(180deg, rgba(17, 17, 17, 0.06), rgba(17, 17, 17, 0.72));
+}
+
+.foam-collection-card > * {
+	position: relative;
+	z-index: 1;
+}
+
+.foam-collection-card span,
+.foam-collection-card strong,
+.foam-collection-card em {
+	color: #fff;
+}
+
+.foam-collection-card span {
+	font-size: 0.88rem;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	margin-bottom: 10px;
+}
+
+.foam-collection-card strong {
+	font-size: 1.35rem;
+	line-height: 1.3;
+	margin-bottom: 16px;
+}
+
+.foam-collection-card em {
+	font-style: normal;
+	font-size: 0.98rem;
+	opacity: 0.88;
+}
+
+.foam-collection-card:hover {
+	transform: translateY(-4px);
+	box-shadow: 0 24px 60px rgba(17, 17, 17, 0.14);
+}
+
+.foam-collection-card--sofabed {
+	background-image: url("/wp-content/uploads/2026/06/sonovafurn-hero-black-corduroy.png");
+}
+
+.foam-collection-card--memory {
+	background-image: linear-gradient(180deg, rgba(17,17,17,0.08), rgba(17,17,17,0.18)), url("/wp-content/uploads/2026/06/sonovafurn-scene-guest-room.png");
+}
+
+.foam-collection-card--loveseat {
+	background-image: linear-gradient(180deg, rgba(17,17,17,0.06), rgba(17,17,17,0.6)), url("/wp-content/uploads/2026/06/310A4442.jpg");
+}
+
+.foam-collection-card--living {
+	background-image: linear-gradient(180deg, rgba(17,17,17,0.06), rgba(17,17,17,0.62)), url("/wp-content/uploads/2026/06/sonovafurn-scene-guest-room.png");
+}
+
+.foam-home-section--product-showcase .woocommerce ul.products {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: 24px;
+}
+
+.woocommerce ul.products::before,
+.woocommerce ul.products::after {
+	display: none;
+}
+
+.woocommerce ul.products li.product {
+	float: none;
+	width: auto;
+	margin: 0;
+	padding: 18px;
+	border: 1px solid var(--foam-color-border);
+	border-radius: 28px;
+	background: #fff;
+	box-shadow: var(--foam-shadow-card);
+	transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.woocommerce ul.products li.product:hover {
+	transform: translateY(-4px);
+	box-shadow: 0 26px 70px rgba(17, 17, 17, 0.09);
+}
+
+.woocommerce ul.products li.product img {
+	border-radius: 22px;
+	background: #f8f6f1;
+}
+
+.foam-lifestyle-gallery {
+	display: grid;
+	grid-template-columns: 1.2fr 1fr;
+	grid-template-rows: repeat(2, 300px);
+	gap: 20px;
+}
+
+.foam-lifestyle-tile {
+	position: relative;
+	border-radius: 30px;
+	overflow: hidden;
+	background-size: cover;
+	background-position: center;
+	display: flex;
+	align-items: flex-end;
+}
+
+.foam-lifestyle-tile::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(180deg, rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.58));
+}
+
+.foam-lifestyle-tile div {
+	position: relative;
+	z-index: 1;
+	padding: 24px;
+	color: #fff;
+}
+
+.foam-lifestyle-tile span,
+.foam-product-scene span {
+	display: block;
+	margin-bottom: 8px;
+	font-size: 0.82rem;
+	text-transform: uppercase;
+	letter-spacing: 0.12em;
+	opacity: 0.88;
+}
+
+.foam-lifestyle-tile strong,
+.foam-product-scene strong {
+	font-size: 1.28rem;
+	line-height: 1.3;
+}
+
+.foam-lifestyle-tile--apartment {
+	grid-row: span 2;
+	background-image: url("/wp-content/uploads/2026/06/sonovafurn-hero-black-corduroy.png");
+}
+
+.foam-lifestyle-tile--living {
+	background-image: url("/wp-content/uploads/2026/06/310A4442.jpg");
+}
+
+.foam-lifestyle-tile--reading {
+	background-image: linear-gradient(180deg, rgba(17,17,17,0.04), rgba(17,17,17,0.48)), url("/wp-content/uploads/2026/06/sonovafurn-hero-black-corduroy.png");
+	background-position: 70% center;
+}
+
+.foam-lifestyle-tile--guest {
+	background-image: url("/wp-content/uploads/2026/06/sonovafurn-scene-guest-room.png");
+}
+
+.foam-review-summary,
+.foam-review-grid,
+.foam-badge-grid,
+.foam-benefits-grid,
+.foam-spec-grid,
+.foam-product-scenes-grid {
+	display: grid;
+	gap: 20px;
+}
+
+.foam-review-summary {
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	margin-bottom: 24px;
+}
+
+.foam-review-summary div {
+	padding: 20px 24px;
+	border-radius: 24px;
+	border: 1px solid var(--foam-color-border);
+	background: #fff;
+}
+
+.foam-review-summary strong {
+	display: block;
+	margin-bottom: 8px;
+	font-size: 1.5rem;
+}
+
+.foam-review-grid,
+.foam-badge-grid,
+.foam-benefits-grid {
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.foam-badge-grid {
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.foam-review-card,
+.foam-icon-card,
+.foam-process-card,
+.foam-visual-card,
+.foam-before-after-card {
+	padding: 28px;
+	border-radius: 26px;
+	background: #fff;
+	border: 1px solid var(--foam-color-border);
+}
+
+.foam-review-card h3,
+.foam-icon-card h3,
+.foam-process-card h3,
+.foam-visual-card h3,
+.foam-before-after-card strong {
+	margin-bottom: 12px;
+	font-size: 1.16rem;
+}
+
+.foam-cta-panel {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 24px;
+	padding: 40px;
+	border: 1px solid var(--foam-color-border);
+	border-radius: 32px;
+	background: linear-gradient(180deg, #fff, #f8f5ee);
+}
+
+.foam-filter-pills {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: 14px;
+	margin-top: 28px;
+}
+
+.foam-filter-pills a {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 14px 18px;
+	border: 1px solid var(--foam-color-border);
+	border-radius: 999px;
+	text-decoration: none;
+	color: var(--foam-color-text);
+	background: #fff;
+}
+
+.foam-breadcrumb-shell {
+	margin: 18px auto 0;
+	max-width: var(--foam-content-width);
+	padding: 0 4px;
+}
+
+.foam-breadcrumb-shell .woocommerce-breadcrumb {
+	font-size: 0.9rem;
+	color: var(--foam-color-muted);
+}
+
+.foam-contact-form input,
+.foam-contact-form textarea,
+.foam-exit-popup__form input {
+	width: 100%;
+	padding: 14px 16px;
+	border: 1px solid var(--foam-color-border);
+	border-radius: 16px;
+	margin-top: 8px;
+}
+
+.foam-exit-popup {
+	position: fixed;
+	inset: 0;
+	z-index: 10000;
+	display: none;
+}
+
+.foam-exit-popup.is-visible {
+	display: block;
+}
+
+.foam-exit-popup__backdrop {
+	position: absolute;
+	inset: 0;
+	background: rgba(17, 17, 17, 0.48);
+}
+
+.foam-exit-popup__dialog {
+	position: relative;
+	max-width: 520px;
+	margin: 9vh auto 0;
+	padding: 34px;
+	border-radius: 30px;
+	background: #fff;
+	box-shadow: 0 30px 90px rgba(17, 17, 17, 0.22);
+}
+
+.foam-exit-popup__close {
+	position: absolute;
+	top: 18px;
+	right: 18px;
+	border: 0;
+	background: transparent;
+	font-size: 1.8rem;
+	cursor: pointer;
+}
+
+.foam-exit-popup__form {
+	display: grid;
+	grid-template-columns: 1fr auto;
+	gap: 12px;
+	margin: 20px 0 10px;
+}
+
+@media (max-width: 1100px) {
+	.foam-site-header__inner {
+		grid-template-columns: 1fr;
+		border-radius: 34px;
+	}
+
+	.foam-site-nav,
+	.foam-site-actions {
+		flex-wrap: wrap;
+		justify-content: center;
+	}
+
+	.foam-nav-panel {
+		right: auto;
+		left: 0;
+		min-width: min(90vw, 500px);
+	}
+
+	.foam-home-features,
+	.foam-collection-grid,
+	.foam-home-section--product-showcase .woocommerce ul.products,
+	.foam-review-grid,
+	.foam-review-summary,
+	.foam-badge-grid,
+	.foam-benefits-grid,
+	.foam-spec-grid,
+	.foam-product-scenes-grid,
+	.foam-filter-pills {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+@media (max-width: 921px) {
+	#content.site-content {
+		padding-top: 164px;
+	}
+
+	.foam-hero-grid,
+	.foam-cta-panel {
+		grid-template-columns: 1fr;
+		flex-direction: column;
+		align-items: flex-start;
+	}
+
+	.foam-hero-copy,
+	.foam-hero-visual {
+		min-height: 460px;
+	}
+
+	.foam-lifestyle-gallery {
+		grid-template-columns: 1fr;
+		grid-template-rows: none;
+	}
+
+	.foam-lifestyle-tile,
+	.foam-lifestyle-tile--apartment {
+		grid-row: auto;
+		min-height: 280px;
+	}
+
+	.foam-exit-popup__form {
+		grid-template-columns: 1fr;
+	}
+}
+
+@media (max-width: 767px) {
+	.foam-site-header {
+		padding: 12px 12px 0;
+	}
+
+	.foam-site-header__inner {
+		width: 100%;
+		padding: 16px;
+		border-radius: 28px;
+	}
+
+	.foam-site-nav,
+	.foam-site-actions {
+		gap: 8px;
+	}
+
+	.foam-site-nav a,
+	.foam-nav-group__toggle,
+	.foam-account-pill {
+		width: 100%;
+		justify-content: center;
+	}
+
+	.foam-nav-panel,
+	.foam-nav-panel--compact {
+		position: static;
+		min-width: 100%;
+		margin-top: 10px;
+		grid-template-columns: 1fr;
+		opacity: 1;
+		visibility: visible;
+		transform: none;
+		pointer-events: auto;
+		display: none;
+	}
+
+	.foam-nav-group:hover .foam-nav-panel,
+	.foam-nav-group:focus-within .foam-nav-panel {
+		display: grid;
+	}
+
+	.foam-hero-shell {
+		padding-top: 36px;
+	}
+
+	.foam-home-section,
+	.foam-ai-shell,
+	.foam-contact-form,
+	.foam-shop-toolbar,
+	.foam-specifications-shell,
+	.foam-how-shell,
+	.foam-product-visual-story,
+	.foam-faq-shell,
+	.foam-fbt-shell,
+	.foam-final-cta,
+	.foam-benefits-shell,
+	.foam-before-after-shell,
+	.foam-layers-shell,
+	.foam-product-scenes-shell {
+		padding: 28px 22px;
+	}
+
+	.foam-home-features,
+	.foam-collection-grid,
+	.foam-home-section--product-showcase .woocommerce ul.products,
+	.foam-review-grid,
+	.foam-review-summary,
+	.foam-badge-grid,
+	.foam-benefits-grid,
+	.foam-spec-grid,
+	.foam-product-scenes-grid,
+	.foam-filter-pills,
+	.foam-hero-metrics {
+		grid-template-columns: 1fr;
+	}
+
+	.foam-hero-copy {
+		padding: 34px 24px;
+	}
+
+	.foam-hero-copy h1,
+	.foam-section-heading h1,
+	.foam-section-heading h2 {
+		font-size: 2.5rem;
+	}
+}

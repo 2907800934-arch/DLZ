@@ -1,0 +1,211 @@
+[
+	{
+		"name": "sonovafurn Modular Compression Sofa",
+		"slug": "sonovafurn-modular-compression-sofa",
+		"sku": "YH20571",
+		"price": "1199",
+		"sale_price": "1099",
+		"categories": ["Compressed Sofa Beds", "Modular Sofas", "Sofa in a Box"],
+		"badges": ["Best Seller"],
+		"foam_density": "2.5 lb/ft3 high-resilience foam core",
+		"fabric": "Textured boucle performance upholstery",
+		"durability": "50,000 rub count, family-room ready",
+		"dimensions": "118\" W x 63\" D x 31\" H",
+		"weight": "178 lb",
+		"colors": "Cloud White, Moss Green",
+		"warranty": "1-year limited warranty",
+		"short_description": "A modular compressed sofa with sculpted volume, boxed delivery, and a layout built for small-space living.",
+		"description": "Designed for apartments and modern family rooms, this modular compression sofa expands into a lounge-focused silhouette with deep seats, soft edges, and premium everyday comfort.",
+		"feature_bullets": [
+			"Vacuum-compressed sofa in a box for easier delivery",
+			"Modular silhouette made for small apartments and media rooms",
+			"Soft-touch boucle texture with deep lounge seating"
+		],
+		"highlights": [
+			"Vacuum Compression Technology",
+			"Easy Setup in 3 to 5 minutes",
+			"Space-Saving boxed delivery",
+			"Convertible modular lounging"
+		],
+		"faq": [
+			{ "q": "Does it need assembly?", "a": "No tools are required. Unbox, remove the wrap, and let the modules expand into shape." },
+			{ "q": "Is it good for small apartments?", "a": "Yes. The boxed format is designed for tighter entries, elevators, and upstairs rooms." },
+			{ "q": "Can I clean the fabric easily?", "a": "Spot-clean with a soft cloth and mild upholstery-safe cleanser." },
+			{ "q": "Is compressed shipping safe?", "a": "Yes. The foam is engineered to recover shape after transit and setup." }
+		]
+	},
+	{
+		"name": "sonovafurn Curved Lounge Sofa",
+		"slug": "sonovafurn-curved-lounge-sofa",
+		"sku": "YH20071-3S",
+		"price": "999",
+		"sale_price": "899",
+		"categories": ["Space Saving Sofas", "Sofa in a Box"],
+		"badges": ["Best Seller"],
+		"foam_density": "2.3 lb/ft3 comfort foam",
+		"fabric": "Velvet-touch compressed upholstery",
+		"durability": "High-use casual seating",
+		"dimensions": "92\" W x 39\" D x 30\" H",
+		"weight": "126 lb",
+		"colors": "Olive Green",
+		"warranty": "1-year limited warranty",
+		"short_description": "A curved compressed sofa with soft arm volume and a statement olive tone for Japandi interiors.",
+		"description": "This compact compressed lounge sofa combines sculpted rounded arms, deep foam comfort, and a delivery-friendly format that fits modern living rooms beautifully.",
+		"feature_bullets": [
+			"Rounded arms for a softer modern profile",
+			"Compressed delivery for easier move-in",
+			"Best-seller style with rich olive upholstery"
+		],
+		"highlights": [
+			"Vacuum Compression Technology",
+			"Ready to style in under 5 minutes",
+			"Apartment-scale delivery footprint",
+			"Living-room focused comfort build"
+		]
+	},
+	{
+		"name": "sonovafurn Sectional Sofa Bed",
+		"slug": "sonovafurn-sectional-sofa-bed",
+		"sku": "YH20341",
+		"price": "1299",
+		"sale_price": "1199",
+		"categories": ["Compressed Sofa Beds", "Convertible Sofa Beds"],
+		"badges": ["Best Seller"],
+		"foam_density": "2.4 lb/ft3 supportive lounge foam",
+		"fabric": "Textured woven upholstery",
+		"durability": "Dual-use lounge and guest sleep",
+		"dimensions": "116\" W x 61\" D x 33\" H",
+		"weight": "184 lb",
+		"colors": "Soft Ivory",
+		"warranty": "1-year limited warranty",
+		"short_description": "A sectional compressed sofa bed with an integrated side module and guest-ready flexibility.",
+		"description": "Perfect for compact homes, this convertible sectional expands into a calm oversized sofa by day and a flexible guest-sleep surface by night.",
+		"feature_bullets": [
+			"Convertible sofa bed for daily living and guests",
+			"Compressed shipping minimizes delivery stress",
+			"Minimal ivory finish for light-filled interiors"
+		],
+		"highlights": [
+			"Vacuum Compression Technology",
+			"Fast expand-and-style setup",
+			"Space-Saving dual-function design",
+			"Guest-ready sectional comfort"
+		]
+	},
+	{
+		"name": "sonovafurn Corner Modular Sofa",
+		"slug": "sonovafurn-corner-modular-sofa",
+		"sku": "YH20567",
+		"price": "1399",
+		"sale_price": "1299",
+		"categories": ["Modular Sofas", "Space Saving Sofas"],
+		"badges": [],
+		"foam_density": "2.6 lb/ft3 dense support foam",
+		"fabric": "Cream boucle upholstery",
+		"durability": "High-traffic family lounging",
+		"dimensions": "124\" W x 65\" D x 32\" H",
+		"weight": "196 lb",
+		"colors": "Cream White",
+		"warranty": "1-year limited warranty",
+		"short_description": "A compression-packed corner sofa with generous seating and a clean studio-ready silhouette.",
+		"description": "This corner modular sofa is built for open-plan spaces that still need delivery efficiency. Its plush modules, soft texture, and low profile create a premium Scandinavian feel.",
+		"feature_bullets": [
+			"Large modular comfort with boxed delivery convenience",
+			"Low-profile silhouette for Scandinavian interiors",
+			"Soft boucle texture and flexible seating layout"
+		],
+		"highlights": [
+			"Vacuum Compression Technology",
+			"Expand and style with minimal setup",
+			"Family-room scale in efficient packaging",
+			"Relaxed modular configuration"
+		]
+	},
+	{
+		"name": "sonovafurn Minimal Sofa Lounger",
+		"slug": "sonovafurn-minimal-sofa-lounger",
+		"sku": "YH20549",
+		"price": "1099",
+		"sale_price": "999",
+		"categories": ["Space Saving Sofas", "Convertible Sofa Beds"],
+		"badges": [],
+		"foam_density": "2.2 lb/ft3 comfort support foam",
+		"fabric": "Soft boucle upholstery",
+		"durability": "Bedroom and lounge use",
+		"dimensions": "101\" W x 57\" D x 31\" H",
+		"weight": "148 lb",
+		"colors": "Warm Ivory",
+		"warranty": "1-year limited warranty",
+		"short_description": "A white compressed lounger sofa with a side chaise shape for calm, modern spaces.",
+		"description": "The Minimal Sofa Lounger brings soft white volume, boxed convenience, and a lounge-first silhouette to compact apartments and guest rooms.",
+		"feature_bullets": [
+			"Soft chaise-inspired layout",
+			"Compressed delivery for small-space move-in",
+			"White boucle finish with gallery-clean presence"
+		],
+		"highlights": [
+			"Vacuum Compression Technology",
+			"Quick expansion and styling",
+			"Space-Saving profile",
+			"Light, minimal room presence"
+		]
+	},
+	{
+		"name": "sonovafurn Compression Sleeper Sofa",
+		"slug": "sonovafurn-compression-sleeper-sofa",
+		"sku": "YH20032-3",
+		"price": "949",
+		"sale_price": "879",
+		"categories": ["Compressed Sofa Beds", "Convertible Sofa Beds", "Sofa in a Box"],
+		"badges": [],
+		"foam_density": "2.3 lb/ft3 sleeper support core",
+		"fabric": "Soft woven upholstery",
+		"durability": "Daily lounging and guest sleep",
+		"dimensions": "90\" W x 37\" D x 31\" H",
+		"weight": "122 lb",
+		"colors": "Pearl White",
+		"warranty": "1-year limited warranty",
+		"short_description": "A compressed sleeper sofa that balances apartment delivery ease with overnight guest function.",
+		"description": "This boxed sleeper sofa is designed to expand quickly, support everyday lounging, and convert compact spaces into a more flexible guest-ready setup.",
+		"feature_bullets": [
+			"Guest-ready compressed sofa bed format",
+			"Designed for elevators, stairs, and tighter rooms",
+			"Soft neutral palette for minimal interiors"
+		],
+		"highlights": [
+			"Vacuum Compression Technology",
+			"Easy Setup in minutes",
+			"Space-Saving guest-ready design",
+			"Modern sofa-bed flexibility"
+		]
+	},
+	{
+		"name": "sonovafurn Memory Foam Mattress 10\"",
+		"slug": "sonovafurn-memory-foam-mattress-10",
+		"sku": "MFM10",
+		"price": "429",
+		"sale_price": "379",
+		"categories": ["Mattresses"],
+		"badges": ["Best Seller"],
+		"foam_density": "3.5 lb/ft3 memory foam layer",
+		"fabric": "Breathable knit cover",
+		"durability": "Everyday sleep support",
+		"dimensions": "Queen: 80\" L x 60\" W x 10\" H",
+		"weight": "72 lb",
+		"colors": "White",
+		"warranty": "10-year limited warranty",
+		"short_description": "A compressed memory foam mattress with balanced contouring and fast room-by-room setup.",
+		"description": "Rolled and boxed for efficient delivery, this mattress expands into a supportive sleep surface ideal for primary bedrooms, guest rooms, and compact homes.",
+		"feature_bullets": [
+			"Rolled and boxed for easy transport",
+			"Pressure-relieving memory foam comfort",
+			"Quick expansion after unboxing"
+		],
+		"highlights": [
+			"Vacuum Compression Technology",
+			"Ready to expand within hours",
+			"Space-Saving transport format",
+			"Balanced support for daily sleep"
+		]
+	}
+]

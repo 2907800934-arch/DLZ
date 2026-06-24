@@ -1,0 +1,304 @@
+.foam-form-storefront .single-product div.product {
+	display: grid;
+	grid-template-columns: minmax(0, 1.04fr) minmax(340px, 0.96fr);
+	gap: 34px;
+	align-items: start;
+}
+
+.foam-form-storefront .single-product div.product div.images,
+.foam-form-storefront .single-product div.product div.summary {
+	float: none;
+	width: auto;
+}
+
+.foam-form-storefront .single-product div.product div.images img {
+	border-radius: 26px;
+	background: #faf8f4;
+}
+
+.foam-form-storefront .single-product div.product .summary {
+	padding: 30px;
+	position: sticky;
+	top: 30px;
+}
+
+.foam-form-storefront .single-product div.product form.cart {
+	margin-bottom: 0;
+}
+
+.foam-form-storefront .quantity .qty {
+	border-radius: 999px;
+	border: 1px solid #ece8e0;
+	padding: 10px 14px;
+}
+
+.foam-form-storefront .single_add_to_cart_button {
+	min-height: 54px;
+}
+
+.foam-form-storefront .woocommerce-product-gallery {
+	margin-bottom: 0;
+}
+
+.foam-form-storefront .woocommerce-product-gallery__wrapper {
+	background: #fff;
+	border-radius: 28px;
+}
+
+.foam-form-storefront .woocommerce-product-gallery .flex-control-thumbs img {
+	border-radius: 18px;
+}
+
+.foam-media-toolbar,
+.foam-social-proof,
+.foam-color-selector__swatches,
+.foam-buy-now-row,
+.foam-before-after-grid,
+.foam-layer-stack,
+.foam-product-scenes-grid {
+	display: grid;
+	gap: 14px;
+}
+
+.foam-media-toolbar {
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	margin-bottom: 18px;
+}
+
+.foam-media-toolbar span,
+.foam-social-proof span,
+.foam-color-selector__swatches span {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 12px 14px;
+	border: 1px solid #ece8e0;
+	border-radius: 999px;
+	background: #fff;
+	font-size: 0.92rem;
+	color: #444;
+}
+
+.foam-social-proof {
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	margin: 10px 0 16px;
+}
+
+.foam-financing-option {
+	margin: 10px 0 0;
+	font-size: 0.94rem;
+}
+
+.foam-color-selector {
+	margin-top: 18px;
+}
+
+.foam-color-selector strong {
+	display: block;
+	margin-bottom: 12px;
+}
+
+.foam-color-selector__swatches {
+	grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
+
+.foam-swatch--black {
+	background: linear-gradient(90deg, #111 0 14px, #fff 14px 100%);
+}
+
+.foam-swatch--green {
+	background: linear-gradient(90deg, #53644d 0 14px, #fff 14px 100%);
+}
+
+.foam-swatch--ivory {
+	background: linear-gradient(90deg, #f0eadf 0 14px, #fff 14px 100%);
+}
+
+.foam-trust-row {
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.foam-buy-now-row {
+	grid-template-columns: 1fr;
+	margin-top: 14px;
+}
+
+.foam-benefits-grid {
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.foam-before-after-grid {
+	grid-template-columns: 1fr 90px 1fr;
+	align-items: center;
+}
+
+.foam-before-after-arrow {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 2.6rem;
+	color: #657752;
+}
+
+.foam-before-after-card span {
+	display: inline-flex;
+	margin-bottom: 10px;
+	padding: 6px 10px;
+	border-radius: 999px;
+	background: #f4f0e8;
+	font-size: 0.82rem;
+	text-transform: uppercase;
+	letter-spacing: 0.12em;
+}
+
+.foam-layer-stack {
+	grid-template-columns: 1fr;
+	max-width: 820px;
+	margin: 0 auto;
+}
+
+.foam-layer {
+	padding: 24px 28px;
+	border-radius: 22px;
+	border: 1px solid #ece8e0;
+	background: #fff;
+	box-shadow: 0 12px 34px rgba(17, 17, 17, 0.04);
+}
+
+.foam-layer strong {
+	display: block;
+	margin-bottom: 8px;
+	font-size: 1.05rem;
+}
+
+.foam-layer--top {
+	margin-left: 0;
+}
+
+.foam-layer--middle {
+	margin-left: 40px;
+	background: #f9f6ef;
+}
+
+.foam-layer--bottom {
+	margin-left: 80px;
+	background: #f3f0e8;
+}
+
+.foam-product-scenes-grid {
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.foam-product-scene {
+	position: relative;
+	min-height: 260px;
+	border-radius: 26px;
+	overflow: hidden;
+	background-size: cover;
+	background-position: center;
+	display: flex;
+	align-items: flex-end;
+}
+
+.foam-product-scene::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(180deg, rgba(0,0,0,0.04), rgba(0,0,0,0.56));
+}
+
+.foam-product-scene div {
+	position: relative;
+	z-index: 1;
+	padding: 22px;
+	color: #fff;
+}
+
+.foam-product-scene--living {
+	background-image: url("/wp-content/uploads/2026/06/sonovafurn-hero-black-corduroy.png");
+}
+
+.foam-product-scene--guest {
+	background-image: url("/wp-content/uploads/2026/06/sonovafurn-scene-guest-room.png");
+}
+
+.foam-product-scene--studio {
+	background-image: linear-gradient(180deg, rgba(0,0,0,0.06), rgba(0,0,0,0.5)), url("/wp-content/uploads/2026/06/sonovafurn-hero-black-corduroy.png");
+	background-position: 70% center;
+}
+
+.foam-product-scene--office {
+	background-image: linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.56)), url("/wp-content/uploads/2026/06/310A4442.jpg");
+}
+
+.foam-form-storefront .woocommerce div.product .product_title {
+	font-size: clamp(2.3rem, 4vw, 3.6rem);
+}
+
+.foam-form-storefront .woocommerce div.product p.price,
+.foam-form-storefront .woocommerce div.product span.price {
+	color: #111;
+	font-weight: 700;
+	font-size: 1.5rem;
+}
+
+.foam-price-note {
+	display: block;
+	margin-top: 6px;
+	color: #666;
+	font-size: 0.92rem;
+}
+
+.foam-form-storefront .woocommerce-tabs ul.tabs li a {
+	font-weight: 600;
+}
+
+.foam-form-storefront .price del {
+	color: #8a857c;
+}
+
+.foam-form-storefront .woocommerce-message,
+.foam-form-storefront .woocommerce-info {
+	border-top-color: #111;
+}
+
+@media (max-width: 1100px) {
+	.foam-benefits-grid,
+	.foam-product-scenes-grid,
+	.foam-trust-row {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+@media (max-width: 921px) {
+	.foam-form-storefront .single-product div.product {
+		grid-template-columns: 1fr;
+	}
+
+	.foam-form-storefront .single-product div.product .summary {
+		position: static;
+	}
+
+	.foam-benefits-grid,
+	.foam-product-scenes-grid,
+	.foam-media-toolbar,
+	.foam-social-proof,
+	.foam-trust-row {
+		grid-template-columns: 1fr;
+	}
+}
+
+@media (max-width: 767px) {
+	.foam-before-after-grid {
+		grid-template-columns: 1fr;
+	}
+
+	.foam-before-after-arrow {
+		transform: rotate(90deg);
+	}
+
+	.foam-layer--middle,
+	.foam-layer--bottom {
+		margin-left: 0;
+	}
+}
