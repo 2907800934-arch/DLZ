@@ -40,8 +40,8 @@ class Foam_Form_Commerce_Product_Page {
 		add_action( 'woocommerce_single_product_summary', array( $this, 'render_social_proof_bar' ), 6 );
 		add_action( 'woocommerce_single_product_summary', array( $this, 'render_offer_banner' ), 7 );
 		add_action( 'woocommerce_single_product_summary', array( $this, 'render_financing_option' ), 11 );
-		add_action( 'woocommerce_single_product_summary', array( $this, 'render_color_selector' ), 23 );
 		add_action( 'woocommerce_single_product_summary', array( $this, 'render_feature_bullets' ), 21 );
+		add_action( 'woocommerce_single_product_summary', array( $this, 'render_color_selector' ), 23 );
 		add_action( 'woocommerce_single_product_summary', array( $this, 'render_materials_snapshot' ), 26 );
 		add_action( 'woocommerce_single_product_summary', array( $this, 'render_trust_row' ), 31 );
 		add_action( 'woocommerce_single_product_summary', array( $this, 'render_buy_now_button' ), 35 );
@@ -71,9 +71,9 @@ class Foam_Form_Commerce_Product_Page {
 		}
 
 		echo '<div class="foam-media-toolbar">';
-		echo '<span>' . esc_html__( 'Image Gallery', 'foam-form-commerce-kit' ) . '</span>';
-		echo '<span>' . esc_html__( 'Video Preview', 'foam-form-commerce-kit' ) . '</span>';
-		echo '<span>' . esc_html__( '360 Room View', 'foam-form-commerce-kit' ) . '</span>';
+		echo '<span>' . esc_html__( 'Gallery', 'foam-form-commerce-kit' ) . '</span>';
+		echo '<span>' . esc_html__( 'Material notes', 'foam-form-commerce-kit' ) . '</span>';
+		echo '<span>' . esc_html__( 'Room context', 'foam-form-commerce-kit' ) . '</span>';
 		echo '</div>';
 	}
 
@@ -106,12 +106,9 @@ class Foam_Form_Commerce_Product_Page {
 			return;
 		}
 
-		$view_count = 120 + ( $product->get_id() % 29 );
-		$sold_count = 12 + ( $product->get_id() % 11 );
-
 		echo '<div class="foam-social-proof">';
-		echo '<span>' . esc_html( sprintf( __( '%d people viewed this today', 'foam-form-commerce-kit' ), $view_count ) ) . '</span>';
-		echo '<span>' . esc_html( sprintf( __( '%d sold in the last 24 hours', 'foam-form-commerce-kit' ), $sold_count ) ) . '</span>';
+		echo '<span>' . esc_html__( 'Designed for compact living rooms, guest rooms, and more flexible domestic layouts', 'foam-form-commerce-kit' ) . '</span>';
+		echo '<span>' . esc_html__( 'Compressed delivery helps reduce friction around stairs, entries, and building access', 'foam-form-commerce-kit' ) . '</span>';
 		echo '</div>';
 	}
 
@@ -127,7 +124,7 @@ class Foam_Form_Commerce_Product_Page {
 			return;
 		}
 
-		echo '<div class="foam-offer-banner">' . esc_html__( 'Limited-time best seller pricing is live now.', 'foam-form-commerce-kit' ) . '</div>';
+		echo '<div class="foam-offer-banner">' . esc_html__( 'Pricing is shown together with fit, delivery, and material information below.', 'foam-form-commerce-kit' ) . '</div>';
 	}
 
 	/**
@@ -143,7 +140,33 @@ class Foam_Form_Commerce_Product_Page {
 		}
 
 		$installment = number_format( (float) $product->get_price() / 4, 2 );
-		echo '<p class="foam-financing-option">' . esc_html( sprintf( __( 'or 4 interest-free payments of $%s with future financing integration', 'foam-form-commerce-kit' ), $installment ) ) . '</p>';
+		echo '<p class="foam-financing-option">' . esc_html( sprintf( __( 'Estimated at $%s across four payments when installment services are available', 'foam-form-commerce-kit' ), $installment ) ) . '</p>';
+	}
+
+	/**
+	 * Render short conversion bullets.
+	 *
+	 * @return void
+	 */
+	public function render_feature_bullets() {
+		global $product;
+
+		if ( ! $product instanceof WC_Product ) {
+			return;
+		}
+
+		$bullets = get_post_meta( $product->get_id(), '_foam_feature_bullets', true );
+		$bullets = is_array( $bullets ) ? $bullets : array(
+			__( 'Convertible format for compact rooms and guest-ready use', 'foam-form-commerce-kit' ),
+			__( 'No assembly required, with a straightforward unbox-and-settle setup', 'foam-form-commerce-kit' ),
+			__( 'Practical upholstery selected for easier routine care', 'foam-form-commerce-kit' ),
+		);
+
+		echo '<div class="foam-feature-bullets"><h3>' . esc_html__( 'What it is designed to do', 'foam-form-commerce-kit' ) . '</h3><ul>';
+		foreach ( $bullets as $bullet ) {
+			echo '<li>' . esc_html( $bullet ) . '</li>';
+		}
+		echo '</ul></div>';
 	}
 
 	/**
@@ -185,32 +208,6 @@ class Foam_Form_Commerce_Product_Page {
 	}
 
 	/**
-	 * Render short conversion bullets.
-	 *
-	 * @return void
-	 */
-	public function render_feature_bullets() {
-		global $product;
-
-		if ( ! $product instanceof WC_Product ) {
-			return;
-		}
-
-		$bullets = get_post_meta( $product->get_id(), '_foam_feature_bullets', true );
-		$bullets = is_array( $bullets ) ? $bullets : array(
-			__( 'Convertible sofa bed format for modern small spaces', 'foam-form-commerce-kit' ),
-			__( 'No assembly required, just unbox and style', 'foam-form-commerce-kit' ),
-			__( 'Pet-friendly, easy-maintenance upholstery story', 'foam-form-commerce-kit' ),
-		);
-
-		echo '<div class="foam-feature-bullets"><h3>' . esc_html__( 'Why customers love it', 'foam-form-commerce-kit' ) . '</h3><ul>';
-		foreach ( $bullets as $bullet ) {
-			echo '<li>' . esc_html( $bullet ) . '</li>';
-		}
-		echo '</ul></div>';
-	}
-
-	/**
 	 * Render materials snapshot.
 	 *
 	 * @return void
@@ -226,12 +223,14 @@ class Foam_Form_Commerce_Product_Page {
 		$fabric     = get_post_meta( $product->get_id(), '_foam_fabric', true );
 		$durability = get_post_meta( $product->get_id(), '_foam_durability', true );
 
-		echo '<div class="foam-section-card foam-materials-card">';
-		echo '<h3>' . esc_html__( 'Quick product highlights', 'foam-form-commerce-kit' ) . '</h3>';
-		echo '<p><strong>' . esc_html__( 'High Density Foam', 'foam-form-commerce-kit' ) . '</strong><br>' . esc_html( $density ? $density : __( 'Supportive comfort foam for daily use.', 'foam-form-commerce-kit' ) ) . '</p>';
-		echo '<p><strong>' . esc_html__( 'Premium Upholstery', 'foam-form-commerce-kit' ) . '</strong><br>' . esc_html( $fabric ? $fabric : __( 'Pet-friendly fabric with easy-care texture.', 'foam-form-commerce-kit' ) ) . '</p>';
-		echo '<p><strong>' . esc_html__( 'Built for real life', 'foam-form-commerce-kit' ) . '</strong><br>' . esc_html( $durability ? $durability : __( 'Convertible, durable, and small-space ready.', 'foam-form-commerce-kit' ) ) . '</p>';
+		echo '<section class="foam-section-card foam-materials-card">';
+		echo '<div class="foam-materials-card__intro"><span>' . esc_html__( 'Material notes', 'foam-form-commerce-kit' ) . '</span><p>' . esc_html__( 'A shorter view of what shapes the feel, finish, and everyday durability of the piece.', 'foam-form-commerce-kit' ) . '</p></div>';
+		echo '<div class="foam-materials-grid">';
+		echo '<article><strong>' . esc_html__( 'Foam structure', 'foam-form-commerce-kit' ) . '</strong><p>' . esc_html( $density ? $density : __( 'Supportive foam intended for repeated daily sitting and sleeping use.', 'foam-form-commerce-kit' ) ) . '</p></article>';
+		echo '<article><strong>' . esc_html__( 'Surface material', 'foam-form-commerce-kit' ) . '</strong><p>' . esc_html( $fabric ? $fabric : __( 'Textured upholstery selected for a calmer visual finish and easier routine care.', 'foam-form-commerce-kit' ) ) . '</p></article>';
+		echo '<article><strong>' . esc_html__( 'Durability context', 'foam-form-commerce-kit' ) . '</strong><p>' . esc_html( $durability ? $durability : __( 'Developed for flexible domestic use, including guest setups and smaller-space living.', 'foam-form-commerce-kit' ) ) . '</p></article>';
 		echo '</div>';
+		echo '</section>';
 	}
 
 	/**
@@ -240,12 +239,12 @@ class Foam_Form_Commerce_Product_Page {
 	 * @return void
 	 */
 	public function render_trust_row() {
-		echo '<div class="foam-trust-row foam-section-card">';
-		echo '<span>' . esc_html__( 'Free shipping', 'foam-form-commerce-kit' ) . '</span>';
-		echo '<span>' . esc_html__( '30 night trial', 'foam-form-commerce-kit' ) . '</span>';
-		echo '<span>' . esc_html__( 'Pet friendly fabric', 'foam-form-commerce-kit' ) . '</span>';
-		echo '<span>' . esc_html__( 'No assembly required', 'foam-form-commerce-kit' ) . '</span>';
-		echo '</div>';
+		echo '<section class="foam-trust-row foam-section-card">';
+		echo '<article><strong>' . esc_html__( 'Shipping notes', 'foam-form-commerce-kit' ) . '</strong><p>' . esc_html__( 'Compressed delivery helps with tighter entries, stairs, and apartment access.', 'foam-form-commerce-kit' ) . '</p></article>';
+		echo '<article><strong>' . esc_html__( 'Return window', 'foam-form-commerce-kit' ) . '</strong><p>' . esc_html__( 'Policy timing stays visible so purchase decisions can remain measured.', 'foam-form-commerce-kit' ) . '</p></article>';
+		echo '<article><strong>' . esc_html__( 'Material details', 'foam-form-commerce-kit' ) . '</strong><p>' . esc_html__( 'Foam, fabric, and maintenance notes stay close to the buying area.', 'foam-form-commerce-kit' ) . '</p></article>';
+		echo '<article><strong>' . esc_html__( 'Simple setup', 'foam-form-commerce-kit' ) . '</strong><p>' . esc_html__( 'Most pieces require unboxing, expansion time, and only light shaping.', 'foam-form-commerce-kit' ) . '</p></article>';
+		echo '</section>';
 	}
 
 	/**
@@ -258,7 +257,7 @@ class Foam_Form_Commerce_Product_Page {
 			return;
 		}
 
-		echo '<div class="foam-buy-now-row"><a class="foam-button foam-button--secondary foam-scroll-cart" href="#cart">' . esc_html__( 'Buy Now', 'foam-form-commerce-kit' ) . '</a></div>';
+		echo '<div class="foam-buy-now-row"><a class="foam-text-link foam-scroll-cart" href="#cart">' . esc_html__( 'Go to purchase options', 'foam-form-commerce-kit' ) . '</a></div>';
 	}
 
 	/**
@@ -272,12 +271,12 @@ class Foam_Form_Commerce_Product_Page {
 		}
 
 		echo '<section class="foam-section-card foam-benefits-shell">';
-		echo '<div class="foam-section-heading"><p class="foam-kicker">' . esc_html__( 'Section 2', 'foam-form-commerce-kit' ) . '</p><h2>' . esc_html__( 'Why Customers Love It', 'foam-form-commerce-kit' ) . '</h2></div>';
+		echo '<div class="foam-section-heading"><p class="foam-kicker">' . esc_html__( 'Technology', 'foam-form-commerce-kit' ) . '</p><h2>' . esc_html__( 'Practical reasons this format settles well into everyday rooms', 'foam-form-commerce-kit' ) . '</h2></div>';
 		echo '<div class="foam-benefits-grid">';
-		echo '<div class="foam-icon-card"><h3>' . esc_html__( 'High Density Foam', 'foam-form-commerce-kit' ) . '</h3><p>' . esc_html__( 'Supportive comfort that feels premium from the first sit.', 'foam-form-commerce-kit' ) . '</p></div>';
-		echo '<div class="foam-icon-card"><h3>' . esc_html__( 'Convertible Design', 'foam-form-commerce-kit' ) . '</h3><p>' . esc_html__( 'A smarter layout for lounge mode and guest-sleep flexibility.', 'foam-form-commerce-kit' ) . '</p></div>';
-		echo '<div class="foam-icon-card"><h3>' . esc_html__( 'Pet Friendly', 'foam-form-commerce-kit' ) . '</h3><p>' . esc_html__( 'A fabric story built for easier upkeep in everyday homes.', 'foam-form-commerce-kit' ) . '</p></div>';
-		echo '<div class="foam-icon-card"><h3>' . esc_html__( 'Easy Cleaning', 'foam-form-commerce-kit' ) . '</h3><p>' . esc_html__( 'Simple spot cleaning and lower-maintenance textures help keep it looking elevated.', 'foam-form-commerce-kit' ) . '</p></div>';
+		echo '<div class="foam-icon-card"><h3>' . esc_html__( 'Layered support foam', 'foam-form-commerce-kit' ) . '</h3><p>' . esc_html__( 'Foam structure selected to balance softness, support, and recovery through regular use.', 'foam-form-commerce-kit' ) . '</p></div>';
+		echo '<div class="foam-icon-card"><h3>' . esc_html__( 'Convertible use', 'foam-form-commerce-kit' ) . '</h3><p>' . esc_html__( 'Useful when one room needs to shift between everyday seating and guest accommodation.', 'foam-form-commerce-kit' ) . '</p></div>';
+		echo '<div class="foam-icon-card"><h3>' . esc_html__( 'Routine maintenance', 'foam-form-commerce-kit' ) . '</h3><p>' . esc_html__( 'Surface materials are chosen with regular cleaning and lived-in use in mind.', 'foam-form-commerce-kit' ) . '</p></div>';
+		echo '<div class="foam-icon-card"><h3>' . esc_html__( 'Entry-friendly delivery', 'foam-form-commerce-kit' ) . '</h3><p>' . esc_html__( 'Compressed transport is especially helpful where access, stairs, or hallways are more limited.', 'foam-form-commerce-kit' ) . '</p></div>';
 		echo '</div>';
 		echo '</section>';
 	}
@@ -293,10 +292,10 @@ class Foam_Form_Commerce_Product_Page {
 		}
 
 		echo '<section class="foam-section-card foam-before-after-shell">';
-		echo '<div class="foam-section-heading"><p class="foam-kicker">' . esc_html__( 'Section 3', 'foam-form-commerce-kit' ) . '</p><h2>' . esc_html__( 'Before vs After', 'foam-form-commerce-kit' ) . '</h2></div>';
+		echo '<div class="foam-section-heading"><p class="foam-kicker">' . esc_html__( 'Use case', 'foam-form-commerce-kit' ) . '</p><h2>' . esc_html__( 'From everyday seating to guest-ready sleeping space', 'foam-form-commerce-kit' ) . '</h2></div>';
 		echo '<div class="foam-before-after-grid">';
 		echo '<div class="foam-before-after-card"><span>' . esc_html__( 'Before', 'foam-form-commerce-kit' ) . '</span><strong>' . esc_html__( 'Small Sofa', 'foam-form-commerce-kit' ) . '</strong><p>' . esc_html__( 'Compact enough for apartment entries and smaller rooms.', 'foam-form-commerce-kit' ) . '</p></div>';
-		echo '<div class="foam-before-after-arrow">â†?/div>';
+		echo '<div class="foam-before-after-arrow" aria-hidden="true">&rarr;</div>';
 		echo '<div class="foam-before-after-card"><span>' . esc_html__( 'After', 'foam-form-commerce-kit' ) . '</span><strong>' . esc_html__( 'Full Size Bed', 'foam-form-commerce-kit' ) . '</strong><p>' . esc_html__( 'Open it up for guests, hosting, or all-day lounge living.', 'foam-form-commerce-kit' ) . '</p></div>';
 		echo '</div>';
 		echo '</section>';
@@ -322,14 +321,14 @@ class Foam_Form_Commerce_Product_Page {
 		$colors     = get_post_meta( $product->get_id(), '_foam_colors', true );
 
 		echo '<section class="foam-section-card foam-specifications-shell">';
-		echo '<div class="foam-section-heading"><p class="foam-kicker">' . esc_html__( 'Section 4', 'foam-form-commerce-kit' ) . '</p><h2>' . esc_html__( 'Dimensions, fit, and room planning', 'foam-form-commerce-kit' ) . '</h2></div>';
+		echo '<div class="foam-section-heading"><p class="foam-kicker">' . esc_html__( 'Fit guide', 'foam-form-commerce-kit' ) . '</p><h2>' . esc_html__( 'Dimensions, room fit, and placement context', 'foam-form-commerce-kit' ) . '</h2></div>';
 		echo '<div class="foam-spec-grid">';
-		echo '<div><strong>' . esc_html__( 'Human Scale Comparison', 'foam-form-commerce-kit' ) . '</strong><span>' . esc_html__( 'Balanced seat depth and approachable height for modern apartment layouts.', 'foam-form-commerce-kit' ) . '</span></div>';
-		echo '<div><strong>' . esc_html__( 'Apartment Fit Guide', 'foam-form-commerce-kit' ) . '</strong><span>' . esc_html( $dimensions ? $dimensions : __( 'Compact enough for smaller living rooms and guest rooms.', 'foam-form-commerce-kit' ) ) . '</span></div>';
-		echo '<div><strong>' . esc_html__( 'Room Placement Examples', 'foam-form-commerce-kit' ) . '</strong><span>' . esc_html__( 'Works in studios, office lounges, guest rooms, and living room corners.', 'foam-form-commerce-kit' ) . '</span></div>';
+		echo '<div><strong>' . esc_html__( 'Scale reference', 'foam-form-commerce-kit' ) . '</strong><span>' . esc_html__( 'Seat depth and height are balanced for domestic use rather than oversized showroom proportion.', 'foam-form-commerce-kit' ) . '</span></div>';
+		echo '<div><strong>' . esc_html__( 'Room fit', 'foam-form-commerce-kit' ) . '</strong><span>' . esc_html( $dimensions ? $dimensions : __( 'Sized to work in smaller living rooms, guest rooms, and apartment layouts.', 'foam-form-commerce-kit' ) ) . '</span></div>';
+		echo '<div><strong>' . esc_html__( 'Placement examples', 'foam-form-commerce-kit' ) . '</strong><span>' . esc_html__( 'Appropriate for studios, office lounges, guest rooms, and secondary sitting areas.', 'foam-form-commerce-kit' ) . '</span></div>';
 		echo '<div><strong>' . esc_html__( 'Weight', 'foam-form-commerce-kit' ) . '</strong><span>' . esc_html( $weight ? $weight : __( 'Designed to be delivery-friendly for its size.', 'foam-form-commerce-kit' ) ) . '</span></div>';
 		echo '<div><strong>' . esc_html__( 'Color', 'foam-form-commerce-kit' ) . '</strong><span>' . esc_html( $colors ? $colors : __( 'Neutral designer-friendly tones.', 'foam-form-commerce-kit' ) ) . '</span></div>';
-		echo '<div><strong>' . esc_html__( 'Shipping', 'foam-form-commerce-kit' ) . '</strong><span>' . esc_html__( 'Fast dispatch with free shipping over $50 and clear return support.', 'foam-form-commerce-kit' ) . '</span></div>';
+		echo '<div><strong>' . esc_html__( 'Shipping', 'foam-form-commerce-kit' ) . '</strong><span>' . esc_html__( 'Delivery information is paired with returns and access notes to make room planning easier.', 'foam-form-commerce-kit' ) . '</span></div>';
 		echo '</div>';
 		echo '</section>';
 	}
@@ -345,11 +344,11 @@ class Foam_Form_Commerce_Product_Page {
 		}
 
 		echo '<section class="foam-section-card foam-layers-shell">';
-		echo '<div class="foam-section-heading"><p class="foam-kicker">' . esc_html__( 'Section 5', 'foam-form-commerce-kit' ) . '</p><h2>' . esc_html__( 'Materials and comfort layers', 'foam-form-commerce-kit' ) . '</h2></div>';
+		echo '<div class="foam-section-heading"><p class="foam-kicker">' . esc_html__( 'Materials', 'foam-form-commerce-kit' ) . '</p><h2>' . esc_html__( 'A simpler view of how the layers work together', 'foam-form-commerce-kit' ) . '</h2></div>';
 		echo '<div class="foam-layer-stack">';
-		echo '<div class="foam-layer foam-layer--top"><strong>' . esc_html__( 'Breathable Fabric Layer', 'foam-form-commerce-kit' ) . '</strong><span>' . esc_html__( 'Soft-touch upholstery with a premium visual texture.', 'foam-form-commerce-kit' ) . '</span></div>';
-		echo '<div class="foam-layer foam-layer--middle"><strong>' . esc_html__( 'Memory Foam Layer', 'foam-form-commerce-kit' ) . '</strong><span>' . esc_html__( 'Pressure-friendly comfort that supports lounging and guest sleep.', 'foam-form-commerce-kit' ) . '</span></div>';
-		echo '<div class="foam-layer foam-layer--bottom"><strong>' . esc_html__( 'Support Foam Layer', 'foam-form-commerce-kit' ) . '</strong><span>' . esc_html__( 'A denser base structure for shape retention and daily durability.', 'foam-form-commerce-kit' ) . '</span></div>';
+		echo '<div class="foam-layer foam-layer--top"><strong>' . esc_html__( 'Outer upholstery', 'foam-form-commerce-kit' ) . '</strong><span>' . esc_html__( 'A textured surface selected for a calmer visual finish and regular household use.', 'foam-form-commerce-kit' ) . '</span></div>';
+		echo '<div class="foam-layer foam-layer--middle"><strong>' . esc_html__( 'Comfort layer', 'foam-form-commerce-kit' ) . '</strong><span>' . esc_html__( 'The softer layer that helps with pressure relief in sitting and guest-sleep scenarios.', 'foam-form-commerce-kit' ) . '</span></div>';
+		echo '<div class="foam-layer foam-layer--bottom"><strong>' . esc_html__( 'Support base', 'foam-form-commerce-kit' ) . '</strong><span>' . esc_html__( 'A denser lower structure intended to help with shape retention and repeated use.', 'foam-form-commerce-kit' ) . '</span></div>';
 		echo '</div>';
 		echo '</section>';
 	}
@@ -365,12 +364,12 @@ class Foam_Form_Commerce_Product_Page {
 		}
 
 		echo '<section class="foam-section-card foam-product-scenes-shell">';
-		echo '<div class="foam-section-heading"><p class="foam-kicker">' . esc_html__( 'Section 6', 'foam-form-commerce-kit' ) . '</p><h2>' . esc_html__( 'Real-life scene inspiration', 'foam-form-commerce-kit' ) . '</h2></div>';
+		echo '<div class="foam-section-heading"><p class="foam-kicker">' . esc_html__( 'Lifestyle', 'foam-form-commerce-kit' ) . '</p><h2>' . esc_html__( 'Room examples based on actual domestic use', 'foam-form-commerce-kit' ) . '</h2></div>';
 		echo '<div class="foam-product-scenes-grid">';
-		echo '<article class="foam-product-scene foam-product-scene--living"><div><span>' . esc_html__( 'Living Room', 'foam-form-commerce-kit' ) . '</span><strong>' . esc_html__( 'Editorial calm for everyday lounging', 'foam-form-commerce-kit' ) . '</strong></div></article>';
-		echo '<article class="foam-product-scene foam-product-scene--guest"><div><span>' . esc_html__( 'Guest Room', 'foam-form-commerce-kit' ) . '</span><strong>' . esc_html__( 'Convertible comfort when guests stay over', 'foam-form-commerce-kit' ) . '</strong></div></article>';
-		echo '<article class="foam-product-scene foam-product-scene--studio"><div><span>' . esc_html__( 'Studio Apartment', 'foam-form-commerce-kit' ) . '</span><strong>' . esc_html__( 'Small-space friendly without looking temporary', 'foam-form-commerce-kit' ) . '</strong></div></article>';
-		echo '<article class="foam-product-scene foam-product-scene--office"><div><span>' . esc_html__( 'Office', 'foam-form-commerce-kit' ) . '</span><strong>' . esc_html__( 'Softens workspaces and creative rooms', 'foam-form-commerce-kit' ) . '</strong></div></article>';
+		echo '<article class="foam-product-scene foam-product-scene--living"><div><span>' . esc_html__( 'Living Room', 'foam-form-commerce-kit' ) . '</span><strong>' . esc_html__( 'For daily sitting, reading, and relaxed evening use', 'foam-form-commerce-kit' ) . '</strong></div></article>';
+		echo '<article class="foam-product-scene foam-product-scene--guest"><div><span>' . esc_html__( 'Guest Room', 'foam-form-commerce-kit' ) . '</span><strong>' . esc_html__( 'For occasional hosting without dedicating a full bed year-round', 'foam-form-commerce-kit' ) . '</strong></div></article>';
+		echo '<article class="foam-product-scene foam-product-scene--studio"><div><span>' . esc_html__( 'Studio Apartment', 'foam-form-commerce-kit' ) . '</span><strong>' . esc_html__( 'For rooms where circulation, storage, and sleeping function overlap', 'foam-form-commerce-kit' ) . '</strong></div></article>';
+		echo '<article class="foam-product-scene foam-product-scene--office"><div><span>' . esc_html__( 'Office', 'foam-form-commerce-kit' ) . '</span><strong>' . esc_html__( 'For secondary rooms that need softer seating without visual weight', 'foam-form-commerce-kit' ) . '</strong></div></article>';
 		echo '</div>';
 		echo '</section>';
 	}
@@ -393,32 +392,32 @@ class Foam_Form_Commerce_Product_Page {
 		$faqs = array(
 			array(
 				'q' => __( 'How firm is the foam?', 'foam-form-commerce-kit' ),
-				'a' => __( 'The comfort feel is designed to balance plush first-impression softness with supportive daily use.', 'foam-form-commerce-kit' ),
+				'a' => __( 'The feel is intended to balance a softer first impression with enough structure for repeated sitting and occasional sleeping use.', 'foam-form-commerce-kit' ),
 			),
 			array(
 				'q' => __( 'Can pets scratch it?', 'foam-form-commerce-kit' ),
-				'a' => __( 'Pet-friendly fabrics are easier to maintain, though we still recommend normal upholstery care habits.', 'foam-form-commerce-kit' ),
+				'a' => __( 'The fabrics are selected to be more practical for homes with pets, though normal upholstery care is still recommended.', 'foam-form-commerce-kit' ),
 			),
 			array(
 				'q' => __( 'Does it require assembly?', 'foam-form-commerce-kit' ),
-				'a' => __( 'No. Most products only need unboxing, expansion, and light shaping.', 'foam-form-commerce-kit' ),
+				'a' => __( 'No. Most products only require unboxing, expansion time, and light shaping after unpacking.', 'foam-form-commerce-kit' ),
 			),
 			array(
 				'q' => __( 'How long does shipping take?', 'foam-form-commerce-kit' ),
-				'a' => __( 'Most in-stock orders dispatch in 1 to 2 business days with US-focused fulfillment timing.', 'foam-form-commerce-kit' ),
+				'a' => __( 'Most in-stock orders dispatch in one to two business days, with final timing depending on destination and carrier scheduling.', 'foam-form-commerce-kit' ),
 			),
 			array(
 				'q' => __( 'Can I return it?', 'foam-form-commerce-kit' ),
-				'a' => __( 'Yes. Returns are supported within the stated policy window for products in original condition.', 'foam-form-commerce-kit' ),
+				'a' => __( 'Yes. Returns are supported within the stated policy window for products kept in original condition.', 'foam-form-commerce-kit' ),
 			),
 		);
 
 		update_post_meta( $product->get_id(), '_foam_faq_schema', $faqs );
 
 		echo '<section class="foam-faq-shell foam-section-card">';
-		echo '<div class="foam-section-heading"><p class="foam-kicker">' . esc_html__( 'Section 7', 'foam-form-commerce-kit' ) . '</p><h2>' . esc_html__( 'Frequently asked questions', 'foam-form-commerce-kit' ) . '</h2></div>';
+		echo '<div class="foam-section-heading"><p class="foam-kicker">' . esc_html__( 'Questions', 'foam-form-commerce-kit' ) . '</p><h2>' . esc_html__( 'The main purchase questions, kept close to the product context', 'foam-form-commerce-kit' ) . '</h2></div>';
 		foreach ( $faqs as $faq ) {
-			echo '<details><summary><strong>' . esc_html( $faq['q'] ) . '</strong></summary><p>' . esc_html( $faq['a'] ) . '</p></details>';
+			echo '<details class="foam-product-faq-item"><summary><strong>' . esc_html( $faq['q'] ) . '</strong></summary><p>' . esc_html( $faq['a'] ) . '</p></details>';
 		}
 		echo '</section>';
 	}
@@ -441,7 +440,7 @@ class Foam_Form_Commerce_Product_Page {
 		}
 
 		echo '<section class="foam-fbt-shell foam-section-card">';
-		echo '<div class="foam-section-heading"><p class="foam-kicker">' . esc_html__( 'Bundle upsell', 'foam-form-commerce-kit' ) . '</p><h2>' . esc_html__( 'Frequently Bought Together', 'foam-form-commerce-kit' ) . '</h2><p>' . esc_html__( 'Recommended add-ons can expand into pillows, throws, and companion seating for higher AOV.', 'foam-form-commerce-kit' ) . '</p></div>';
+		echo '<div class="foam-section-heading"><p class="foam-kicker">' . esc_html__( 'Related pieces', 'foam-form-commerce-kit' ) . '</p><h2>' . esc_html__( 'Companion items that fit the same room story', 'foam-form-commerce-kit' ) . '</h2><p>' . esc_html__( 'Useful as supporting pieces when the room needs a more complete setup, rather than as aggressive add-ons.', 'foam-form-commerce-kit' ) . '</p></div>';
 		echo do_shortcode( '[products ids="' . esc_attr( implode( ',', $related_ids ) ) . '" columns="3" orderby="post__in"]' );
 		echo '</section>';
 	}
@@ -457,8 +456,8 @@ class Foam_Form_Commerce_Product_Page {
 		}
 
 		echo '<section class="foam-section-card foam-final-cta">';
-		echo '<div><p class="foam-kicker">' . esc_html__( 'Final CTA', 'foam-form-commerce-kit' ) . '</p><h2>' . esc_html__( 'Bring home premium comfort with the feel of a trusted furniture brand.', 'foam-form-commerce-kit' ) . '</h2></div>';
-		echo '<div class="foam-final-cta__actions"><a class="foam-button foam-scroll-cart" href="#cart">' . esc_html__( 'Add To Cart', 'foam-form-commerce-kit' ) . '</a><a class="foam-button foam-button--secondary" href="/shipping-policy">' . esc_html__( 'Shipping & Returns', 'foam-form-commerce-kit' ) . '</a></div>';
+		echo '<div><p class="foam-kicker">' . esc_html__( 'Next step', 'foam-form-commerce-kit' ) . '</p><h2>' . esc_html__( 'Continue only after the fit, material logic, and delivery approach feel appropriate for the room.', 'foam-form-commerce-kit' ) . '</h2></div>';
+		echo '<div class="foam-final-cta__actions"><a class="foam-text-link foam-scroll-cart" href="#cart">' . esc_html__( 'Review purchase options', 'foam-form-commerce-kit' ) . '</a><a class="foam-text-link" href="/shipping-policy">' . esc_html__( 'Read shipping, delivery, and return details', 'foam-form-commerce-kit' ) . '</a></div>';
 		echo '</section>';
 	}
 
@@ -483,7 +482,7 @@ class Foam_Form_Commerce_Product_Page {
 					<strong><?php echo esc_html( $product->get_name() ); ?></strong><br>
 					<span><?php echo wp_kses_post( $product->get_price_html() ); ?></span>
 				</div>
-				<button type="button" class="foam-button foam-sticky-cart__button"><?php esc_html_e( 'Add to Cart', 'foam-form-commerce-kit' ); ?></button>
+				<button type="button" class="foam-button foam-sticky-cart__button"><?php esc_html_e( 'Review options', 'foam-form-commerce-kit' ); ?></button>
 			</div>
 		</div>
 		<?php
@@ -501,8 +500,12 @@ class Foam_Form_Commerce_Product_Page {
 			return $price_html;
 		}
 
+		if ( is_shop() || is_product_taxonomy() || is_product_category() ) {
+			return $price_html;
+		}
+
 		if ( $product->get_price() && (float) $product->get_price() >= 50 ) {
-			$price_html .= '<small class="foam-price-note">' . esc_html__( 'Fast US shipping included', 'foam-form-commerce-kit' ) . '</small>';
+			$price_html .= '<small class="foam-price-note">' . esc_html__( 'Delivery and room-fit notes available below', 'foam-form-commerce-kit' ) . '</small>';
 		}
 
 		return $price_html;
@@ -581,10 +584,9 @@ class Foam_Form_Commerce_Product_Page {
 	 */
 	public function render_archive_badges() {
 		global $product;
+
 		if ( $product instanceof WC_Product && has_term( 'best-seller', 'product_badge', $product->get_id() ) ) {
 			echo '<span class="foam-best-seller-flag">' . esc_html__( 'Best Seller', 'foam-form-commerce-kit' ) . '</span>';
 		}
 	}
-
 }
-

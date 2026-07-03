@@ -41,6 +41,81 @@ class Foam_Form_Commerce_Seeder {
 	}
 
 	/**
+	 * Resolve upload-based asset path.
+	 *
+	 * @param string $filename Upload filename.
+	 * @return string
+	 */
+	protected function get_upload_asset_path( $filename ) {
+		$uploads = wp_get_upload_dir();
+
+		if ( empty( $uploads['basedir'] ) ) {
+			return '';
+		}
+
+		return trailingslashit( $uploads['basedir'] ) . '2026/07/' . ltrim( $filename, '/' );
+	}
+
+	/**
+	 * Ensure a file exists in the media library and return its attachment ID.
+	 *
+	 * @param string $filename Upload filename.
+	 * @return int
+	 */
+	protected function ensure_product_attachment( $filename ) {
+		$file_path = $this->get_upload_asset_path( $filename );
+
+		if ( ! $file_path || ! file_exists( $file_path ) ) {
+			return 0;
+		}
+
+		$attachment = get_posts(
+			array(
+				'post_type'      => 'attachment',
+				'post_status'    => 'inherit',
+				'posts_per_page' => 1,
+				'meta_key'       => '_wp_attached_file',
+				'meta_value'     => '2026/07/' . $filename,
+				'fields'         => 'ids',
+			)
+		);
+
+		if ( ! empty( $attachment ) ) {
+			return (int) $attachment[0];
+		}
+
+		$filetype = wp_check_filetype( basename( $file_path ), null );
+		$uploads  = wp_get_upload_dir();
+		$relative = '2026/07/' . $filename;
+
+		$attachment_id = wp_insert_attachment(
+			array(
+				'post_mime_type' => $filetype['type'],
+				'post_title'     => sanitize_text_field( pathinfo( $filename, PATHINFO_FILENAME ) ),
+				'post_content'   => '',
+				'post_status'    => 'inherit',
+				'guid'           => trailingslashit( $uploads['baseurl'] ) . $relative,
+			),
+			$file_path
+		);
+
+		if ( is_wp_error( $attachment_id ) || ! $attachment_id ) {
+			return 0;
+		}
+
+		require_once ABSPATH . 'wp-admin/includes/image.php';
+
+		update_post_meta( $attachment_id, '_wp_attached_file', $relative );
+		$metadata = wp_generate_attachment_metadata( $attachment_id, $file_path );
+
+		if ( ! empty( $metadata ) ) {
+			wp_update_attachment_metadata( $attachment_id, $metadata );
+		}
+
+		return (int) $attachment_id;
+	}
+
+	/**
 	 * Register WP-CLI commands when available.
 	 *
 	 * @return void
@@ -58,7 +133,10 @@ class Foam_Form_Commerce_Seeder {
 	 */
 	public function seed_store( $args = array(), $assoc_args = array() ) {
 		if ( ! class_exists( 'WooCommerce' ) ) {
-			WP_CLI::error( 'WooCommerce is required before seeding.' );
+			if ( class_exists( 'WP_CLI' ) ) {
+				WP_CLI::error( 'WooCommerce is required before seeding.' );
+			}
+			return;
 		}
 
 		$this->create_core_pages();
@@ -66,7 +144,9 @@ class Foam_Form_Commerce_Seeder {
 		$this->configure_shipping();
 		$this->create_sample_products();
 
-		WP_CLI::success( 'sonovafurn compressed sofa store created.' );
+		if ( class_exists( 'WP_CLI' ) ) {
+			WP_CLI::success( 'sonovafurn compressed sofa store created.' );
+		}
 	}
 
 	/**
@@ -82,7 +162,7 @@ class Foam_Form_Commerce_Seeder {
 			'Blog'              => '<h1>Blog</h1><h2>Space Design</h2><p><a href="/small-apartment-living-guide/">Small Apartment Living Guide</a></p><p><a href="/minimalist-living-room-ideas/">Minimalist Living Room Ideas</a></p><h2>Product Comparison</h2><p><a href="/compressed-sofa-vs-traditional-sofa/">Compressed Sofa vs Traditional Sofa</a></p><p><a href="/best-sofa-beds-2026/">Best Sofa Beds 2026</a></p><h2>Buying Guides</h2><p><a href="/how-to-choose-a-sofa-for-small-space/">How to Choose a Sofa for Small Space</a></p>',
 			'Contact'           => '<h1>Contact</h1><p>Email: support@sonovafurn.com</p><p>Support hours: Monday-Friday, 9am-6pm PT</p><p>Need help with shipping, returns, or choosing a compressed sofa? Send us a message below.</p>[contact-form-placeholder]',
 			'FAQ'               => '<h1>FAQ</h1><h2>Shipping Time</h2><p>Most sofa orders dispatch within 1-2 business days, with delivery timing depending on destination.</p><h2>Return Policy</h2><p>Returns are accepted within 30 days in original condition.</p><h2>Compression Safety</h2><p>Our compressed shipping format is designed to protect foam structure during transit and expansion.</p><h2>Warranty</h2><p>Most compressed sofas include a 1-year limited warranty.</p>',
-			'Shipping Policy'   => '<h1>Shipping Policy</h1><p>We offer free shipping on orders over $50 within the United States. Orders under $50 ship at a flat standard rate of $9.99. Most in-stock compressed sofas dispatch within 1-2 business days.</p>',
+			'Shipping Policy'   => '<h1>Shipping &amp; Delivery</h1><p>We offer fast, affordable, flat-rate delivery on every order through standard carrier networks such as UPS and FedEx whenever possible.</p>',
 			'Return Policy'     => '<h1>Return Policy</h1><p>Returns are accepted within 30 days of delivery for products in original condition. Please contact support@sonovafurn.com before returning a compressed sofa or mattress.</p>',
 			'Privacy Policy'    => '<h1>Privacy Policy</h1><p>We only use customer information to support checkout, shipping communication, and customer care. This placeholder page is ready for your full production policy copy.</p>',
 			'Terms of Service'  => '<h1>Terms of Service</h1><p>By purchasing from sonovafurn, customers agree to our policies around order fulfillment, returns, warranties, and safe product use. This page is ready for your legal copy.</p>',
@@ -236,11 +316,18 @@ class Foam_Form_Commerce_Seeder {
 			$product->set_reviews_allowed( true );
 
 			if ( ! empty( $item['sku'] ) ) {
-				$product->set_sku( $item['sku'] );
+				$sku_owner_id = wc_get_product_id_by_sku( $item['sku'] );
+				if ( ! $sku_owner_id || (int) $sku_owner_id === (int) $product->get_id() ) {
+					$product->set_sku( $item['sku'] );
+				}
 			}
 
 			if ( ! empty( $item['slug'] ) ) {
 				$product->set_slug( $item['slug'] );
+			}
+
+			if ( isset( $item['menu_order'] ) ) {
+				$product->set_menu_order( (int) $item['menu_order'] );
 			}
 
 			$product_id = $product->save();
@@ -263,6 +350,15 @@ class Foam_Form_Commerce_Seeder {
 			update_post_meta( $product_id, '_foam_warranty', $item['warranty'] );
 			update_post_meta( $product_id, '_foam_highlights', $item['highlights'] );
 			update_post_meta( $product_id, '_foam_faq', isset( $item['faq'] ) ? $item['faq'] : array() );
+
+			if ( ! empty( $item['image'] ) ) {
+				$attachment_id = $this->ensure_product_attachment( $item['image'] );
+				if ( $attachment_id ) {
+					set_post_thumbnail( $product_id, $attachment_id );
+					$product->set_image_id( $attachment_id );
+					$product->save();
+				}
+			}
 		}
 	}
 }

@@ -206,6 +206,151 @@
 			"Ready to expand within hours",
 			"Space-Saving transport format",
 			"Balanced support for daily sleep"
-		]
+		],
+		"menu_order": 120
+	},
+	{
+		"name": "sonovafurn Ribbed Floor Lounger",
+		"slug": "sonovafurn-ribbed-floor-lounger",
+		"sku": "SF-RFL-01",
+		"price": "499",
+		"sale_price": "449",
+		"categories": ["Space Saving Sofas", "Furniture"],
+		"badges": ["Best Seller"],
+		"foam_density": "2.2 lb/ft3 supportive lounge foam",
+		"fabric": "Wide-channel corduroy upholstery",
+		"durability": "Reading nook and casual daily seating",
+		"dimensions": "33\" W x 40\" D x 29\" H",
+		"weight": "41 lb",
+		"colors": "Taupe Gray",
+		"warranty": "1-year limited warranty",
+		"short_description": "A ribbed floor lounger with a low sculpted profile for reading corners, bedrooms, and smaller living spaces.",
+		"description": "Designed for compact rooms and calm interiors, this floor lounger pairs a supportive foam core with wide corduroy texture and a relaxed seat angle that works especially well near shelving, windows, or quiet lounge zones.",
+		"feature_bullets": [
+			"Low lounge silhouette for flexible small-space placement",
+			"Soft ribbed corduroy texture with supportive foam comfort",
+			"Easy to style in reading corners and guest spaces"
+		],
+		"highlights": [
+			"Foam lounge comfort",
+			"Ready to use with no assembly",
+			"Compact footprint for smaller rooms",
+			"Textural corduroy finish"
+		],
+		"faq": [
+			{ "q": "Does it require assembly?", "a": "No assembly is required. It is designed to be placed and used right away." },
+			{ "q": "Is it suitable for apartments?", "a": "Yes. Its lower profile and smaller footprint work well in apartments, studios, and bedrooms." },
+			{ "q": "How should the corduroy be cleaned?", "a": "Use a soft brush or upholstery-safe vacuum attachment for routine care and spot-clean gently when needed." }
+		],
+		"image": "sonovafurn-ribbed-floor-lounger-gray.png",
+		"menu_order": 10
+	},
+	{
+		"name": "sonovafurn Reading Lounge Chair",
+		"slug": "sonovafurn-reading-lounge-chair",
+		"sku": "SF-RLC-02",
+		"price": "559",
+		"sale_price": "499",
+		"categories": ["Space Saving Sofas", "Furniture"],
+		"badges": [],
+		"foam_density": "2.3 lb/ft3 contour-support foam",
+		"fabric": "Fine-rib performance corduroy",
+		"durability": "Reading, lounging, and occasional guest use",
+		"dimensions": "35\" W x 45\" D x 30\" H",
+		"weight": "44 lb",
+		"colors": "Rust Clay",
+		"warranty": "1-year limited warranty",
+		"short_description": "A reading lounge chair with a warm rust corduroy finish, relaxed foam volume, and an easy library-corner presence.",
+		"description": "This lounge chair is shaped for slower moments: reading, quiet coffee breaks, and softer evening use. Its low foam body and warm corduroy texture bring a more lived-in tone to modern apartments without losing the clean silhouette.",
+		"feature_bullets": [
+			"Warm rust color for editorial apartment styling",
+			"Foam comfort shaped for reading and casual lounging",
+			"Works naturally with side tables, shelving, and window light"
+		],
+		"highlights": [
+			"Relaxed foam support",
+			"No-tool setup",
+			"Small-space reading corner fit",
+			"Warm corduroy texture"
+		],
+		"faq": [
+			{ "q": "Is the chair firm or soft?", "a": "It balances soft surface comfort with enough internal support for upright reading use." },
+			{ "q": "Does the rust color work in neutral rooms?", "a": "Yes. It is designed to act as a warmer accent inside beige, cream, wood, and white interiors." },
+			{ "q": "Can it be moved easily?", "a": "Yes. It is lighter than a standard armchair and easier to reposition inside smaller rooms." }
+		],
+		"image": "sonovafurn-reading-lounge-chair-rust.jpg",
+		"menu_order": 11
+	},
+	{
+		"name": "sonovafurn Grand Modular Sectional",
+		"slug": "sonovafurn-grand-modular-sectional",
+		"sku": "SF-GMS-03",
+		"price": "1499",
+		"sale_price": "1399",
+		"categories": ["Modular Sofas", "Space Saving Sofas", "Furniture"],
+		"badges": ["Best Seller"],
+		"foam_density": "2.6 lb/ft3 layered resilience foam",
+		"fabric": "Cream boucle upholstery",
+		"durability": "Large-format family lounging and daily living",
+		"dimensions": "134\" W x 71\" D x 31\" H",
+		"weight": "208 lb",
+		"colors": "Soft Ivory",
+		"warranty": "1-year limited warranty",
+		"short_description": "A grand modular sectional with oversized proportions, creamy boucle texture, and a bright architectural room presence.",
+		"description": "For customers who want the softness of a premium modular silhouette without a visually heavy result, this sectional combines rounded forms, warm daylight compatibility, and deeper lounge seating suited to open-plan living rooms.",
+		"feature_bullets": [
+			"Oversized modular layout for open-plan living rooms",
+			"Soft ivory boucle that keeps larger seating visually light",
+			"Deep supportive seating for everyday comfort and hosting"
+		],
+		"highlights": [
+			"Layered modular foam structure",
+			"Low visual weight for large rooms",
+			"Open-plan lounge scale",
+			"Soft boucle finish"
+		],
+		"faq": [
+			{ "q": "Will it overpower a room?", "a": "It is large, but the low silhouette and soft ivory finish help it feel lighter than many traditional sectionals." },
+			{ "q": "Is it good for daily family use?", "a": "Yes. It is designed for repeated lounging, hosting, and regular living room use." },
+			{ "q": "Does the fabric look premium in natural light?", "a": "Yes. The boucle texture is especially suited to bright rooms and soft daylight." }
+		],
+		"image": "sonovafurn-grand-modular-sectional-ivory.png",
+		"menu_order": 12
+	},
+	{
+		"name": "sonovafurn Cream Swivel Lounge Chair",
+		"slug": "sonovafurn-cream-swivel-lounge-chair",
+		"sku": "SF-CSC-04",
+		"price": "629",
+		"sale_price": "579",
+		"categories": ["Furniture", "Space Saving Sofas"],
+		"badges": [],
+		"foam_density": "2.4 lb/ft3 plush support foam",
+		"fabric": "Soft cream performance velvet",
+		"durability": "Bedroom, lounge, and accent seating use",
+		"dimensions": "41\" W x 40\" D x 29\" H",
+		"weight": "53 lb",
+		"colors": "Cream Beige",
+		"warranty": "1-year limited warranty",
+		"short_description": "A cream lounge chair with a rounded deep seat and swivel base for softer evening rooms and premium accent seating.",
+		"description": "This rounded lounge chair brings a more cocooned seat feel to the collection. The plush cream finish, low sculptural volume, and subtle swivel base make it useful for bedrooms, corners, and quieter living-room accents.",
+		"feature_bullets": [
+			"Rounded cocoon seat shape with premium softness",
+			"Subtle swivel base for flexible room positioning",
+			"Warm cream finish suited to quieter evening interiors"
+		],
+		"highlights": [
+			"Plush foam comfort",
+			"Swivel accent seating",
+			"Compact but generous seat volume",
+			"Soft evening-room palette"
+		],
+		"faq": [
+			{ "q": "Does the chair rotate fully?", "a": "It is designed with a smooth swivel base for flexible everyday positioning." },
+			{ "q": "Is it good for bedrooms or only living rooms?", "a": "It works well in both, especially in corners, reading spaces, and bedroom seating zones." },
+			{ "q": "How does the cream fabric hold up?", "a": "Routine care and prompt spot cleaning help maintain the softer light finish over time." }
+		],
+		"image": "sonovafurn-cream-swivel-lounge-chair.jpg",
+		"menu_order": 13
 	}
 ]
