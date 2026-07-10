@@ -675,29 +675,39 @@ add_action(
 				'kicker' => __( 'Sleep essentials', 'foam-form-studio' ),
 				'groups' => array(
 					array(
-						'heading' => __( 'Products', 'foam-form-studio' ),
+						'heading' => __( 'Sleep Furniture', 'foam-form-studio' ),
+						'links'   => array(
+							array( 'title' => __( 'Beds', 'foam-form-studio' ), 'url' => foam_form_get_product_search_url( 'bed' ) ),
+							array( 'title' => __( 'Upholstered Headboards', 'foam-form-studio' ), 'url' => foam_form_get_product_search_url( 'upholstered headboard' ) ),
+							array( 'title' => __( 'Daybeds', 'foam-form-studio' ), 'url' => $daybeds_url ),
+							array( 'title' => __( 'Bed Benches', 'foam-form-studio' ), 'url' => foam_form_get_product_search_url( 'bed bench' ) ),
+						),
+					),
+					array(
+						'heading' => __( 'Foam Comfort', 'foam-form-studio' ),
 						'links'   => array(
 							array( 'title' => __( 'Mattresses', 'foam-form-studio' ), 'url' => $all_mattress_url ),
-							array( 'title' => __( 'Memory Foam Mattresses', 'foam-form-studio' ), 'url' => $memory_foam_url ),
-							array( 'title' => __( 'Pillows', 'foam-form-studio' ), 'url' => $pillow_url ),
 							array( 'title' => __( 'Mattress Toppers', 'foam-form-studio' ), 'url' => $topper_url ),
-							array( 'title' => __( 'Sleeper Sofas', 'foam-form-studio' ), 'url' => $sleeper_sofas_url ),
+							array( 'title' => __( 'Support Cushions', 'foam-form-studio' ), 'url' => foam_form_get_product_search_url( 'support cushion' ) ),
+							array( 'title' => __( 'Bed Wedges', 'foam-form-studio' ), 'url' => foam_form_get_product_search_url( 'bed wedge' ) ),
 						),
 					),
 					array(
-						'heading' => __( 'Lifestyle Collections', 'foam-form-studio' ),
+						'heading' => __( 'Pillows & Layers', 'foam-form-studio' ),
 						'links'   => array(
-							array( 'title' => __( 'Guest Ready', 'foam-form-studio' ), 'url' => $guest_ready_url ),
-							array( 'title' => __( 'Small Bedrooms', 'foam-form-studio' ), 'url' => $small_space_guide_url ),
-							array( 'title' => __( 'Overnight Hosting', 'foam-form-studio' ), 'url' => $hosting_inspiration_url ),
+							array( 'title' => __( 'Pillows', 'foam-form-studio' ), 'url' => $pillow_url ),
+							array( 'title' => __( 'Bolsters', 'foam-form-studio' ), 'url' => foam_form_get_product_search_url( 'bolster' ) ),
+							array( 'title' => __( 'Body Pillows', 'foam-form-studio' ), 'url' => $body_pillow_url ),
+							array( 'title' => __( 'Quilted Covers', 'foam-form-studio' ), 'url' => foam_form_get_product_search_url( 'quilted cover' ) ),
 						),
 					),
 					array(
-						'heading' => __( 'Editorial', 'foam-form-studio' ),
+						'heading' => __( 'The Sleep Edit', 'foam-form-studio' ),
 						'links'   => array(
-							array( 'title' => __( 'Sleep Better', 'foam-form-studio' ), 'url' => $sleep_better_url ),
-							array( 'title' => __( 'Guest Room Guide', 'foam-form-studio' ), 'url' => $guest_room_guide_url ),
-							array( 'title' => __( 'Foam Technology', 'foam-form-studio' ), 'url' => $foam_technology_url ),
+							array( 'title' => __( 'Sleep Essentials', 'foam-form-studio' ), 'url' => $sleep_better_url ),
+							array( 'title' => __( 'Guest Room Ready', 'foam-form-studio' ), 'url' => $guest_ready_url ),
+							array( 'title' => __( 'Best Sellers', 'foam-form-studio' ), 'url' => $best_seller_url ),
+							array( 'title' => __( 'New Arrivals', 'foam-form-studio' ), 'url' => $new_arrivals_url ),
 						),
 					),
 				),
@@ -716,28 +726,39 @@ add_action(
 				'kicker' => __( 'Smaller footprints', 'foam-form-studio' ),
 				'groups' => array(
 					array(
-						'heading' => __( 'Products', 'foam-form-studio' ),
+						'heading' => __( 'Compact Seating', 'foam-form-studio' ),
 						'links'   => array(
-							array( 'title' => __( 'Compact Sofas', 'foam-form-studio' ), 'url' => $compact_sofas_url ),
-							array( 'title' => __( 'Foldable Furniture', 'foam-form-studio' ), 'url' => $foldable_furniture_url ),
-							array( 'title' => __( 'Convertible Furniture', 'foam-form-studio' ), 'url' => $convertible_furniture_url ),
-							array( 'title' => __( 'Storage Solutions', 'foam-form-studio' ), 'url' => $storage_solutions_url ),
+							array( 'title' => __( 'Apartment Sofas', 'foam-form-studio' ), 'url' => foam_form_get_product_search_url( 'apartment sofa' ) ),
+							array( 'title' => __( 'Loveseats', 'foam-form-studio' ), 'url' => $loveseat_url ),
+							array( 'title' => __( 'Armless Chairs', 'foam-form-studio' ), 'url' => foam_form_get_product_search_url( 'armless chair' ) ),
+							array( 'title' => __( 'Poufs', 'foam-form-studio' ), 'url' => foam_form_get_product_search_url( 'pouf' ) ),
 						),
 					),
 					array(
-						'heading' => __( 'Lifestyle Collections', 'foam-form-studio' ),
+						'heading' => __( 'Flexible Sleep', 'foam-form-studio' ),
 						'links'   => array(
-							array( 'title' => __( 'Studio Apartments', 'foam-form-studio' ), 'url' => $studio_apartments_url ),
-							array( 'title' => __( 'Apartment Living', 'foam-form-studio' ), 'url' => $apartment_living_url ),
-							array( 'title' => __( 'Home Office', 'foam-form-studio' ), 'url' => $home_office_url ),
+							array( 'title' => __( 'Fold-Out Sofa Beds', 'foam-form-studio' ), 'url' => foam_form_get_product_search_url( 'fold-out sofa bed' ) ),
+							array( 'title' => __( 'Daybeds', 'foam-form-studio' ), 'url' => $daybeds_url ),
+							array( 'title' => __( 'Floor Mattresses', 'foam-form-studio' ), 'url' => foam_form_get_product_search_url( 'floor mattress' ) ),
+							array( 'title' => __( 'Guest Sleep', 'foam-form-studio' ), 'url' => $guest_ready_url ),
 						),
 					),
 					array(
-						'heading' => __( 'Guides', 'foam-form-studio' ),
+						'heading' => __( 'Smart Pieces', 'foam-form-studio' ),
 						'links'   => array(
-							array( 'title' => __( 'Small Space Guide', 'foam-form-studio' ), 'url' => $small_space_guide_url ),
-							array( 'title' => __( 'Living Room Ideas', 'foam-form-studio' ), 'url' => $living_room_ideas_url ),
-							array( 'title' => __( 'Minimal Living', 'foam-form-studio' ), 'url' => $minimal_living_url ),
+							array( 'title' => __( 'Storage Ottomans', 'foam-form-studio' ), 'url' => $storage_solutions_url ),
+							array( 'title' => __( 'Nesting Tables', 'foam-form-studio' ), 'url' => foam_form_get_product_search_url( 'nesting table' ) ),
+							array( 'title' => __( 'Benches', 'foam-form-studio' ), 'url' => foam_form_get_product_search_url( 'bench' ) ),
+							array( 'title' => __( 'Modular Units', 'foam-form-studio' ), 'url' => $modular_url ),
+						),
+					),
+					array(
+						'heading' => __( 'Small Space Edit', 'foam-form-studio' ),
+						'links'   => array(
+							array( 'title' => __( 'Studio Living', 'foam-form-studio' ), 'url' => $studio_apartments_url ),
+							array( 'title' => __( 'Small Bedroom', 'foam-form-studio' ), 'url' => $small_space_guide_url ),
+							array( 'title' => __( 'Reading Corners', 'foam-form-studio' ), 'url' => foam_form_get_post_search_url( 'reading corner' ) ),
+							array( 'title' => __( 'Multi-Use Rooms', 'foam-form-studio' ), 'url' => foam_form_get_post_search_url( 'multi-use rooms' ) ),
 						),
 					),
 				),
@@ -756,28 +777,38 @@ add_action(
 				'kicker' => __( 'Shared living', 'foam-form-studio' ),
 				'groups' => array(
 					array(
-						'heading' => __( 'Products', 'foam-form-studio' ),
+						'heading' => __( 'Pet Beds', 'foam-form-studio' ),
 						'links'   => array(
-							array( 'title' => __( 'Pet Beds', 'foam-form-studio' ), 'url' => $pet_beds_url ),
-							array( 'title' => __( 'Pet Sofas', 'foam-form-studio' ), 'url' => $pet_sofas_url ),
-							array( 'title' => __( 'Pet Ramps', 'foam-form-studio' ), 'url' => $pet_ramps_url ),
-							array( 'title' => __( 'Pet Stairs', 'foam-form-studio' ), 'url' => $pet_stairs_url ),
+							array( 'title' => __( 'Sofa-Style Beds', 'foam-form-studio' ), 'url' => $pet_sofas_url ),
+							array( 'title' => __( 'Bolster Beds', 'foam-form-studio' ), 'url' => foam_form_get_product_search_url( 'bolster pet bed' ) ),
+							array( 'title' => __( 'Orthopedic Foam Beds', 'foam-form-studio' ), 'url' => foam_form_get_product_search_url( 'orthopedic foam pet bed' ) ),
+							array( 'title' => __( 'Crate Mats', 'foam-form-studio' ), 'url' => foam_form_get_product_search_url( 'crate mat' ) ),
 						),
 					),
 					array(
-						'heading' => __( 'Lifestyle Collections', 'foam-form-studio' ),
+						'heading' => __( 'Home-Friendly Pieces', 'foam-form-studio' ),
 						'links'   => array(
-							array( 'title' => __( 'Living With Pets', 'foam-form-studio' ), 'url' => $living_with_pets_url ),
-							array( 'title' => __( 'Apartment Pets', 'foam-form-studio' ), 'url' => $apartment_living_url ),
-							array( 'title' => __( 'Softer Landings', 'foam-form-studio' ), 'url' => $pet_ramps_url ),
+							array( 'title' => __( 'Pet Steps', 'foam-form-studio' ), 'url' => $pet_stairs_url ),
+							array( 'title' => __( 'Floor Cushions', 'foam-form-studio' ), 'url' => $pet_cushions_url ),
+							array( 'title' => __( 'Washable Covers', 'foam-form-studio' ), 'url' => foam_form_get_product_search_url( 'washable cover' ) ),
+							array( 'title' => __( 'Travel Mats', 'foam-form-studio' ), 'url' => foam_form_get_product_search_url( 'travel mat' ) ),
 						),
 					),
 					array(
-						'heading' => __( 'Editorial', 'foam-form-studio' ),
+						'heading' => __( 'By Pet Size', 'foam-form-studio' ),
 						'links'   => array(
-							array( 'title' => __( 'Living With Pets', 'foam-form-studio' ), 'url' => $living_with_pets_url ),
-							array( 'title' => __( 'Cleaning Guide', 'foam-form-studio' ), 'url' => $cleaning_guide_url ),
-							array( 'title' => __( 'Pet Care Tips', 'foam-form-studio' ), 'url' => $pet_care_tips_url ),
+							array( 'title' => __( 'Small Pets', 'foam-form-studio' ), 'url' => foam_form_get_product_search_url( 'small pet' ) ),
+							array( 'title' => __( 'Medium Pets', 'foam-form-studio' ), 'url' => foam_form_get_product_search_url( 'medium pet' ) ),
+							array( 'title' => __( 'Large Pets', 'foam-form-studio' ), 'url' => foam_form_get_product_search_url( 'large pet' ) ),
+						),
+					),
+					array(
+						'heading' => __( 'The Pet Edit', 'foam-form-studio' ),
+						'links'   => array(
+							array( 'title' => __( 'Easy-Clean Favorites', 'foam-form-studio' ), 'url' => $cleaning_guide_url ),
+							array( 'title' => __( 'Senior Pet Support', 'foam-form-studio' ), 'url' => foam_form_get_product_search_url( 'senior pet support' ) ),
+							array( 'title' => __( 'New Arrivals', 'foam-form-studio' ), 'url' => $new_arrivals_url ),
+							array( 'title' => __( 'Best Sellers', 'foam-form-studio' ), 'url' => $best_seller_url ),
 						),
 					),
 				),
@@ -791,39 +822,51 @@ add_action(
 					'cta_url'   => $pet_beds_url,
 				),
 			),
-			'FEATURED COLLECTIONS' => array(
+			'COLLECTIONS' => array(
 				'url'    => $best_seller_url,
 				'kicker' => __( 'Curated edits', 'foam-form-studio' ),
 				'groups' => array(
 					array(
-						'heading' => __( 'Product Categories', 'foam-form-studio' ),
+						'heading' => __( 'Featured', 'foam-form-studio' ),
 						'links'   => array(
-							array( 'title' => __( 'Editor\'s Picks', 'foam-form-studio' ), 'url' => $editors_picks_url ),
 							array( 'title' => __( 'New Arrivals', 'foam-form-studio' ), 'url' => $new_arrivals_url ),
 							array( 'title' => __( 'Best Sellers', 'foam-form-studio' ), 'url' => $best_seller_url ),
+							array( 'title' => __( 'Ready to Ship', 'foam-form-studio' ), 'url' => foam_form_get_product_search_url( 'ready to ship' ) ),
+							array( 'title' => __( 'Signature Pieces', 'foam-form-studio' ), 'url' => $editors_picks_url ),
 						),
 					),
 					array(
-						'heading' => __( 'Lifestyle Collections', 'foam-form-studio' ),
+						'heading' => __( 'By Room', 'foam-form-studio' ),
 						'links'   => array(
-							array( 'title' => __( 'Apartment Collection', 'foam-form-studio' ), 'url' => $apartment_collection_url ),
-							array( 'title' => __( 'Minimal Living', 'foam-form-studio' ), 'url' => $minimal_living_url ),
-							array( 'title' => __( 'Guest Ready', 'foam-form-studio' ), 'url' => $guest_ready_url ),
+							array( 'title' => __( 'Living Room', 'foam-form-studio' ), 'url' => $living_room_ideas_url ),
+							array( 'title' => __( 'Bedroom', 'foam-form-studio' ), 'url' => $guest_room_guide_url ),
+							array( 'title' => __( 'Small Spaces', 'foam-form-studio' ), 'url' => $small_living_spaces_url ),
+							array( 'title' => __( 'Pet Corners', 'foam-form-studio' ), 'url' => $living_with_pets_url ),
 						),
 					),
 					array(
-						'heading' => __( 'Editorial Links', 'foam-form-studio' ),
+						'heading' => __( 'By Comfort', 'foam-form-studio' ),
 						'links'   => array(
-							array( 'title' => __( 'Comfort Journey', 'foam-form-studio' ), 'url' => home_url( '/#comfort-journey' ) ),
-							array( 'title' => __( 'Living Ideas', 'foam-form-studio' ), 'url' => $living_ideas_url ),
-							array( 'title' => __( 'Buying Guides', 'foam-form-studio' ), 'url' => $buying_guides_url ),
+							array( 'title' => __( 'Soft Support', 'foam-form-studio' ), 'url' => foam_form_get_product_search_url( 'soft support' ) ),
+							array( 'title' => __( 'Deep Lounge', 'foam-form-studio' ), 'url' => foam_form_get_product_search_url( 'deep lounge' ) ),
+							array( 'title' => __( 'Everyday Sleep', 'foam-form-studio' ), 'url' => foam_form_get_product_search_url( 'everyday sleep' ) ),
+							array( 'title' => __( 'Easy-Care', 'foam-form-studio' ), 'url' => foam_form_get_product_search_url( 'easy care' ) ),
+						),
+					),
+					array(
+						'heading' => __( 'Editorial Collections', 'foam-form-studio' ),
+						'links'   => array(
+							array( 'title' => __( 'The Calm Home', 'foam-form-studio' ), 'url' => $minimal_living_url ),
+							array( 'title' => __( 'Weekend Living', 'foam-form-studio' ), 'url' => foam_form_get_post_search_url( 'weekend living' ) ),
+							array( 'title' => __( 'Guest-Ready Home', 'foam-form-studio' ), 'url' => $guest_ready_url ),
+							array( 'title' => __( 'Compact Luxury', 'foam-form-studio' ), 'url' => $apartment_collection_url ),
 						),
 					),
 				),
 				'feature' => array(
 					'image'     => $editorial_base . 'sonovafurn-best-seller-01.png',
 					'position'  => 'center center',
-					'meta'      => __( 'Featured collections', 'foam-form-studio' ),
+					'meta'      => __( 'Collections', 'foam-form-studio' ),
 					'title'     => __( 'A calmer way to navigate the pieces that define the brand', 'foam-form-studio' ),
 					'copy'      => __( 'Curated edits bring together softer silhouettes, practical layers, and the rooms they were made to support.', 'foam-form-studio' ),
 					'cta_label' => __( 'Explore Collection →', 'foam-form-studio' ),
@@ -838,23 +881,25 @@ add_action(
 						'heading' => __( 'Brand', 'foam-form-studio' ),
 						'links'   => array(
 							array( 'title' => __( 'Our Story', 'foam-form-studio' ), 'url' => $about_url ),
-							array( 'title' => __( 'Materials', 'foam-form-studio' ), 'url' => $materials_url ),
-							array( 'title' => __( 'Foam Technology', 'foam-form-studio' ), 'url' => $foam_technology_url ),
+							array( 'title' => __( 'Design Philosophy', 'foam-form-studio' ), 'url' => $about_url . '#design-philosophy' ),
+							array( 'title' => __( 'Craft & Comfort', 'foam-form-studio' ), 'url' => home_url( '/#comfort-journey' ) ),
 						),
 					),
 					array(
-						'heading' => __( 'Values', 'foam-form-studio' ),
+						'heading' => __( 'Service', 'foam-form-studio' ),
 						'links'   => array(
-							array( 'title' => __( 'Sustainability', 'foam-form-studio' ), 'url' => $sustainability_url ),
-							array( 'title' => __( 'Small Home Living', 'foam-form-studio' ), 'url' => $small_space_guide_url ),
-						),
-					),
-					array(
-						'heading' => __( 'Support', 'foam-form-studio' ),
-						'links'   => array(
-							array( 'title' => __( 'Shipping', 'foam-form-studio' ), 'url' => $shipping_url ),
+							array( 'title' => __( 'Shipping & Delivery', 'foam-form-studio' ), 'url' => $shipping_url ),
+							array( 'title' => __( 'Returns', 'foam-form-studio' ), 'url' => foam_form_get_page_url( 'return-refund-policy', '/return-refund-policy/' ) ),
+							array( 'title' => __( 'Warranty', 'foam-form-studio' ), 'url' => foam_form_get_page_url( 'warranty', '/warranty/' ) ),
 							array( 'title' => __( 'Contact', 'foam-form-studio' ), 'url' => $contact_url ),
-							array( 'title' => __( 'Journal', 'foam-form-studio' ), 'url' => $blog_url ),
+						),
+					),
+					array(
+						'heading' => __( 'Trade', 'foam-form-studio' ),
+						'links'   => array(
+							array( 'title' => __( 'Designers & Projects', 'foam-form-studio' ), 'url' => foam_form_get_post_search_url( 'designers projects' ) ),
+							array( 'title' => __( 'Wholesale Inquiry', 'foam-form-studio' ), 'url' => $contact_url ),
+							array( 'title' => __( 'Custom Support', 'foam-form-studio' ), 'url' => $contact_url ),
 						),
 					),
 				),
@@ -873,25 +918,27 @@ add_action(
 				'kicker' => __( 'Editorial reading', 'foam-form-studio' ),
 				'groups' => array(
 					array(
-						'heading' => __( 'Topics', 'foam-form-studio' ),
+						'heading' => __( 'Living Notes', 'foam-form-studio' ),
 						'links'   => array(
-							array( 'title' => __( 'Living Ideas', 'foam-form-studio' ), 'url' => $living_ideas_url ),
-							array( 'title' => __( 'Interior Styling', 'foam-form-studio' ), 'url' => $interior_styling_url ),
-							array( 'title' => __( 'Buying Guides', 'foam-form-studio' ), 'url' => $buying_guides_url ),
+							array( 'title' => __( 'Styling Ideas', 'foam-form-studio' ), 'url' => $interior_styling_url ),
+							array( 'title' => __( 'Small Space Living', 'foam-form-studio' ), 'url' => $small_space_guide_url ),
+							array( 'title' => __( 'Comfort Guides', 'foam-form-studio' ), 'url' => $buying_guides_url ),
 						),
 					),
 					array(
-						'heading' => __( 'Care & Materials', 'foam-form-studio' ),
+						'heading' => __( 'Materials & Care', 'foam-form-studio' ),
 						'links'   => array(
-							array( 'title' => __( 'Furniture Care', 'foam-form-studio' ), 'url' => $furniture_care_url ),
-							array( 'title' => __( 'Foam Education', 'foam-form-studio' ), 'url' => $foam_education_url ),
+							array( 'title' => __( 'Foam Guide', 'foam-form-studio' ), 'url' => $foam_education_url ),
+							array( 'title' => __( 'Fabric Care', 'foam-form-studio' ), 'url' => $furniture_care_url ),
+							array( 'title' => __( 'Pet-Friendly Home', 'foam-form-studio' ), 'url' => $living_with_pets_url ),
 						),
 					),
 					array(
-						'heading' => __( 'From the Brand', 'foam-form-studio' ),
+						'heading' => __( 'Stories', 'foam-form-studio' ),
 						'links'   => array(
-							array( 'title' => __( 'Company News', 'foam-form-studio' ), 'url' => $company_news_url ),
-							array( 'title' => __( 'Comfort Journey', 'foam-form-studio' ), 'url' => home_url( '/#comfort-journey' ) ),
+							array( 'title' => __( 'Home Tours', 'foam-form-studio' ), 'url' => foam_form_get_post_search_url( 'home tours' ) ),
+							array( 'title' => __( 'Collection Stories', 'foam-form-studio' ), 'url' => $living_ideas_url ),
+							array( 'title' => __( 'Brand Journal', 'foam-form-studio' ), 'url' => $company_news_url ),
 						),
 					),
 				),
