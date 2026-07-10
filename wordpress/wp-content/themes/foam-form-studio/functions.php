@@ -12,6 +12,71 @@ if ( ! defined( 'ABSPATH' ) ) {
 define( 'FOAM_FORM_THEME_VERSION', '1.1.0' );
 
 /**
+ * Determine whether the front-end design lab should render.
+ *
+ * @return bool
+ */
+function foam_form_should_load_design_lab() {
+	return false;
+}
+
+/**
+ * Build front-end design lab payload for the current page.
+ *
+ * @return array<string, mixed>
+ */
+function foam_form_get_design_lab_payload() {
+	$page_id       = get_queried_object_id();
+	$template_slug = '';
+	$page_type     = 'generic';
+	$page_title    = wp_get_document_title();
+	$object        = get_queried_object();
+
+	if ( $page_id ) {
+		$template_slug = (string) get_page_template_slug( $page_id );
+	}
+
+	if ( $object instanceof WP_Post ) {
+		$page_type  = $object->post_type;
+		$page_title = get_the_title( $object ) ?: $page_title;
+	} elseif ( $object instanceof WP_Term ) {
+		$page_type  = $object->taxonomy;
+		$page_title = $object->name ?: $page_title;
+	}
+
+	if ( is_front_page() || is_home() ) {
+		$page_type = 'front-page';
+	}
+
+	if ( function_exists( 'is_shop' ) && is_shop() ) {
+		$page_type = 'shop';
+	}
+
+	if ( function_exists( 'is_product' ) && is_product() ) {
+		$page_type = 'single-product';
+	}
+
+	if ( function_exists( 'is_product_category' ) && is_product_category() ) {
+		$page_type = 'product-category';
+	}
+
+	if ( empty( $template_slug ) ) {
+		$template_slug = 'default';
+	}
+
+	return array(
+		'pageId'      => $page_id ? (int) $page_id : 0,
+		'pageKey'     => md5( home_url( add_query_arg( array(), $GLOBALS['wp']->request ?? '' ) ) ),
+		'pageTitle'   => $page_title,
+		'pageType'    => $page_type,
+		'template'    => $template_slug,
+		'path'        => wp_parse_url( home_url( add_query_arg( array(), $GLOBALS['wp']->request ?? '' ) ), PHP_URL_PATH ),
+		'bodyClasses' => array_values( get_body_class() ),
+		'storageKey'  => 'foamFormDesignLab.v1',
+	);
+}
+
+/**
  * Keep the storefront source language in English.
  *
  * GTranslate then auto-switches the visible language based on the
@@ -33,13 +98,21 @@ add_filter( 'locale', 'foam_form_filter_frontend_locale', 20 );
 add_action(
 	'wp_enqueue_scripts',
 	function () {
+		$font_query     = 'family=DM+Serif+Display:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap';
 		$theme_css_path = get_stylesheet_directory() . '/assets/css/site.css';
 		$theme_js_path  = get_stylesheet_directory() . '/assets/js/site.js';
 
 		wp_enqueue_style(
+			'foam-form-fonts',
+			'https://fonts.googleapis.com/css2?' . $font_query,
+			array(),
+			null
+		);
+
+		wp_enqueue_style(
 			'foam-form-studio',
 			get_stylesheet_directory_uri() . '/assets/css/site.css',
-			array( 'astra-theme-css' ),
+			array( 'astra-theme-css', 'foam-form-fonts' ),
 			file_exists( $theme_css_path ) ? (string) filemtime( $theme_css_path ) : FOAM_FORM_THEME_VERSION
 		);
 
@@ -50,9 +123,69 @@ add_action(
 			file_exists( $theme_js_path ) ? (string) filemtime( $theme_js_path ) : FOAM_FORM_THEME_VERSION,
 			true
 		);
+
+		if ( foam_form_should_load_design_lab() ) {
+			wp_localize_script(
+				'foam-form-studio',
+				'foamDesignLab',
+				foam_form_get_design_lab_payload()
+			);
+		}
+
+		wp_script_add_data( 'foam-form-studio', 'strategy', 'defer' );
+		wp_script_add_data( 'foam-form-studio', 'defer', true );
+
+		wp_dequeue_script( 'wp-embed' );
+
+		if ( ! is_user_logged_in() ) {
+			wp_deregister_style( 'dashicons' );
+		}
 	},
 	20
 );
+
+add_filter(
+	'wp_resource_hints',
+	function ( $urls, $relation_type ) {
+		if ( 'preconnect' === $relation_type ) {
+			$urls[] = 'https://fonts.googleapis.com';
+			$urls[] = array(
+				'href'        => 'https://fonts.gstatic.com',
+				'crossorigin' => 'anonymous',
+			);
+		}
+
+		return $urls;
+	},
+	10,
+	2
+);
+
+add_action(
+	'init',
+	function () {
+		remove_action( 'wp_head', 'print_emoji_detection_script', 7 );
+		remove_action( 'admin_print_scripts', 'print_emoji_detection_script' );
+		remove_action( 'wp_print_styles', 'print_emoji_styles' );
+		remove_action( 'admin_print_styles', 'print_emoji_styles' );
+	}
+);
+
+/**
+ * Build an editorial asset URL by filename.
+ *
+ * @param string $filename File inside uploads/2026/07.
+ * @return string
+ */
+function foam_form_get_editorial_asset_url( $filename ) {
+	$uploads = wp_get_upload_dir();
+
+	if ( empty( $uploads['baseurl'] ) ) {
+		return '';
+	}
+
+	return trailingslashit( $uploads['baseurl'] ) . '2026/07/' . ltrim( $filename, '/' );
+}
 
 add_action(
 	'after_setup_theme',
@@ -72,7 +205,7 @@ add_filter(
 			return 'page-builder';
 		}
 
-		return $layout;
+		return 'no-sidebar';
 	}
 );
 
@@ -83,7 +216,18 @@ add_filter(
 			return 'full-width-content';
 		}
 
-		return $layout;
+		return 'full-width-content';
+	}
+);
+
+add_filter(
+	'astra_the_title_enabled',
+	function ( $enabled ) {
+		if ( is_front_page() || is_home() || is_page( 'home' ) ) {
+			return false;
+		}
+
+		return $enabled;
 	}
 );
 
@@ -119,6 +263,227 @@ function foam_form_get_product_category_url( $slug ) {
 	}
 
 	return home_url( '/shop/' );
+}
+
+/**
+ * Build a WooCommerce product search URL.
+ *
+ * @param string $query Search keywords.
+ * @return string
+ */
+function foam_form_get_product_search_url( $query ) {
+	return add_query_arg(
+		array(
+			's'         => $query,
+			'post_type' => 'product',
+		),
+		home_url( '/' )
+	);
+}
+
+/**
+ * Build a post search URL for editorial and journal links.
+ *
+ * @param string $query Search keywords.
+ * @return string
+ */
+function foam_form_get_post_search_url( $query ) {
+	return add_query_arg(
+		array(
+			's'         => $query,
+			'post_type' => 'post',
+		),
+		home_url( '/' )
+	);
+}
+
+/**
+ * Attach richer visual previews to header mega-menu cards.
+ *
+ * @param array  $nav_cards Menu configuration.
+ * @param string $editorial_base Upload base URL for editorial assets.
+ * @return array
+ */
+function foam_form_enrich_nav_cards( $nav_cards, $editorial_base ) {
+	$preview_map = array(
+		'SHOP'        => array(
+			'All Products' => array(
+				'image' => $editorial_base . 'sonovafurn-best-seller-02.png',
+				'title' => __( 'Shop the Full Collection', 'foam-form-studio' ),
+				'copy'  => __( 'A clear starting point for living-room seating, memory foam essentials, and everyday soft goods.', 'foam-form-studio' ),
+			),
+			'New Arrivals' => array(
+				'image' => $editorial_base . 'sonovafurn-source-03.png',
+				'title' => __( 'New Shapes for Softer Rooms', 'foam-form-studio' ),
+				'copy'  => __( 'Fresh silhouettes and quieter textures prepared for modern apartments and guest-ready layouts.', 'foam-form-studio' ),
+			),
+			'Best Sellers' => array(
+				'image' => $editorial_base . 'sonovafurn-best-seller-01.png',
+				'title' => __( 'Best Sellers', 'foam-form-studio' ),
+				'copy'  => __( 'The most considered Sonovafurn pieces for compact living, comfortable routines, and everyday ease.', 'foam-form-studio' ),
+			),
+			'Bundles'      => array(
+				'image' => $editorial_base . 'sonovafurn-best-seller-03.png',
+				'title' => __( 'Layered Sets', 'foam-form-studio' ),
+				'copy'  => __( 'Complete seating and comfort combinations designed to make room planning feel simpler.', 'foam-form-studio' ),
+			),
+		),
+		'SOFAS'       => array(
+			'All Sofas'       => array(
+				'image' => $editorial_base . 'sonovafurn-editorial-shop-night.jpg',
+				'title' => __( 'All Sofas', 'foam-form-studio' ),
+				'copy'  => __( 'Explore flexible seating built for smaller footprints and calmer interiors.', 'foam-form-studio' ),
+			),
+			'Boneless Sofas'  => array(
+				'image' => $editorial_base . 'sonovafurn-ribbed-floor-lounger-gray.png',
+				'title' => __( 'Boneless Sofa Forms', 'foam-form-studio' ),
+				'copy'  => __( 'Relaxed, low-profile seating with a softer structure and lounge-first posture.', 'foam-form-studio' ),
+			),
+			'Sofa Beds'       => array(
+				'image' => $editorial_base . 'sonovafurn-best-seller-02.png',
+				'title' => __( 'Convertible Sofa Beds', 'foam-form-studio' ),
+				'copy'  => __( 'Day-to-night comfort made for studio apartments, guest rooms, and flexible layouts.', 'foam-form-studio' ),
+			),
+			'Modular Sofas'   => array(
+				'image' => $editorial_base . 'sonovafurn-grand-modular-sectional-ivory.png',
+				'title' => __( 'Modular Seating', 'foam-form-studio' ),
+				'copy'  => __( 'Configurable sections designed to scale with apartment living and room changes.', 'foam-form-studio' ),
+			),
+			'Floor Sofas'     => array(
+				'image' => $editorial_base . 'sonovafurn-source-04.png',
+				'title' => __( 'Floor Sofas', 'foam-form-studio' ),
+				'copy'  => __( 'Grounded lounge pieces with a more casual silhouette and quiet, sculptural presence.', 'foam-form-studio' ),
+			),
+			'Loveseats'       => array(
+				'image' => $editorial_base . 'sonovafurn-editorial-lifestyle-sofa.jpg',
+				'title' => __( 'Compact Loveseats', 'foam-form-studio' ),
+				'copy'  => __( 'Two-seat comfort balanced for reading corners, smaller living rooms, and shared spaces.', 'foam-form-studio' ),
+			),
+			'Sectionals'      => array(
+				'image' => $editorial_base . 'sonovafurn-grand-modular-sectional-ivory.png',
+				'title' => __( 'Sectional Layouts', 'foam-form-studio' ),
+				'copy'  => __( 'Broader seating compositions prepared for larger living zones and hosting moments.', 'foam-form-studio' ),
+			),
+			'Ottomans'        => array(
+				'image' => $editorial_base . 'sonovafurn-source-01.jpg',
+				'title' => __( 'Ottomans & Soft Extensions', 'foam-form-studio' ),
+				'copy'  => __( 'Soft add-ons that introduce leg support, extra seating, and quieter layering.', 'foam-form-studio' ),
+			),
+		),
+		'MATTRESSES'  => array(
+			'All Mattresses'   => array(
+				'image' => $editorial_base . 'sonovafurn-editorial-hero-living.jpg',
+				'title' => __( 'Mattress Collection', 'foam-form-studio' ),
+				'copy'  => __( 'Sleep essentials designed for easier setup, easier transport, and a calmer bedroom visual language.', 'foam-form-studio' ),
+			),
+			'Memory Foam'      => array(
+				'image' => $editorial_base . 'sonovafurn-best-seller-03.png',
+				'title' => __( 'Memory Foam', 'foam-form-studio' ),
+				'copy'  => __( 'Pressure-relieving layers shaped for supportive recovery and softer nighttime comfort.', 'foam-form-studio' ),
+			),
+			'Hybrid'           => array(
+				'image' => $editorial_base . 'sonovafurn-source-02.jpg',
+				'title' => __( 'Hybrid Construction', 'foam-form-studio' ),
+				'copy'  => __( 'Balanced mattress structures combining softness, support, and more responsive lift.', 'foam-form-studio' ),
+			),
+			'Mattress Toppers' => array(
+				'image' => $editorial_base . 'sonovafurn-editorial-white-sofa.jpg',
+				'title' => __( 'Topper Layer', 'foam-form-studio' ),
+				'copy'  => __( 'A lighter comfort layer for guest beds, dorm setups, and everyday sleep refreshes.', 'foam-form-studio' ),
+			),
+		),
+		'PILLOWS'     => array(
+			'All Pillows' => array(
+				'image' => $editorial_base . 'sonovafurn-editorial-white-sofa.jpg',
+				'title' => __( 'Pillow Collection', 'foam-form-studio' ),
+				'copy'  => __( 'Soft support pieces designed for rest, recovery, and a cleaner sleep setup.', 'foam-form-studio' ),
+			),
+			'Memory Foam' => array(
+				'image' => $editorial_base . 'sonovafurn-source-01.jpg',
+				'title' => __( 'Memory Foam Support', 'foam-form-studio' ),
+				'copy'  => __( 'Adaptive support shaped for nightly alignment and calmer pressure relief.', 'foam-form-studio' ),
+			),
+			'Cooling'     => array(
+				'image' => $editorial_base . 'sonovafurn-source-02.jpg',
+				'title' => __( 'Cooling Pillows', 'foam-form-studio' ),
+				'copy'  => __( 'Breathable pillow formats prepared for warmer sleepers and lighter seasonal bedding.', 'foam-form-studio' ),
+			),
+			'Neck'        => array(
+				'image' => $editorial_base . 'sonovafurn-reading-lounge-chair-rust.jpg',
+				'title' => __( 'Neck Support', 'foam-form-studio' ),
+				'copy'  => __( 'Targeted contours for seated rest, travel moments, and evening wind-down routines.', 'foam-form-studio' ),
+			),
+			'Body'        => array(
+				'image' => $editorial_base . 'sonovafurn-editorial-lifestyle-sofa.jpg',
+				'title' => __( 'Body Pillows', 'foam-form-studio' ),
+				'copy'  => __( 'Long-form comfort for side sleepers, recovery routines, and softer lounging.', 'foam-form-studio' ),
+			),
+		),
+		'PET'         => array(
+			'Pet Stairs'   => array(
+				'image' => $editorial_base . 'sonovafurn-source-04.png',
+				'title' => __( 'Pet Stairs', 'foam-form-studio' ),
+				'copy'  => __( 'Softer access support for smaller companions and elevated home routines.', 'foam-form-studio' ),
+			),
+			'Pet Ramps'    => array(
+				'image' => $editorial_base . 'sonovafurn-source-03.png',
+				'title' => __( 'Pet Ramps', 'foam-form-studio' ),
+				'copy'  => __( 'Gentler transitions for sofas, beds, and everyday movement around the home.', 'foam-form-studio' ),
+			),
+			'Pet Beds'     => array(
+				'image' => $editorial_base . 'sonovafurn-editorial-lifestyle-sofa.jpg',
+				'title' => __( 'Pet Beds', 'foam-form-studio' ),
+				'copy'  => __( 'Foam-based comfort for calmer rest, easier upkeep, and shared living spaces.', 'foam-form-studio' ),
+			),
+			'Pet Cushions' => array(
+				'image' => $editorial_base . 'sonovafurn-source-01.jpg',
+				'title' => __( 'Pet Cushions', 'foam-form-studio' ),
+				'copy'  => __( 'Low-profile comfort layers that bring softness to crates, corners, and travel setups.', 'foam-form-studio' ),
+			),
+		),
+		'ACCESSORIES' => array(
+			'Covers'    => array(
+				'image' => $editorial_base . 'sonovafurn-source-03.png',
+				'title' => __( 'Protective Covers', 'foam-form-studio' ),
+				'copy'  => __( 'Practical layers for easier upkeep, lighter care routines, and extended product life.', 'foam-form-studio' ),
+			),
+			'Cushions'  => array(
+				'image' => $editorial_base . 'sonovafurn-source-04.png',
+				'title' => __( 'Cushions', 'foam-form-studio' ),
+				'copy'  => __( 'Soft accent pieces that complete a room without disturbing its visual calm.', 'foam-form-studio' ),
+			),
+			'Blankets'  => array(
+				'image' => $editorial_base . 'sonovafurn-source-02.jpg',
+				'title' => __( 'Blankets', 'foam-form-studio' ),
+				'copy'  => __( 'Textural finishing layers for colder evenings, guest rooms, and everyday lounging.', 'foam-form-studio' ),
+			),
+		),
+	);
+
+	foreach ( $nav_cards as $section_label => $section ) {
+		if ( empty( $section['cards'] ) || empty( $preview_map[ $section_label ] ) ) {
+			continue;
+		}
+
+		foreach ( $section['cards'] as $index => $card ) {
+			$card_label = isset( $card['title'] ) ? wp_strip_all_tags( $card['title'] ) : '';
+
+			if ( empty( $preview_map[ $section_label ][ $card_label ] ) ) {
+				continue;
+			}
+
+			$nav_cards[ $section_label ]['cards'][ $index ] = array_merge(
+				$card,
+				array(
+					'image'         => $preview_map[ $section_label ][ $card_label ]['image'],
+					'preview_title' => $preview_map[ $section_label ][ $card_label ]['title'],
+					'preview_copy'  => $preview_map[ $section_label ][ $card_label ]['copy'],
+				)
+			);
+		}
+	}
+
+	return $nav_cards;
 }
 
 add_filter( 'show_admin_bar', '__return_false' );
@@ -167,130 +532,363 @@ add_filter(
 add_action(
 	'wp_body_open',
 	function () {
-		$home_url       = home_url( '/' );
-		$shop_url       = foam_form_get_page_url( 'shop', '/shop/' );
-		$cart_url       = foam_form_get_page_url( 'cart', '/cart/' );
-		$account_url    = foam_form_get_page_url( 'my-account', '/my-account/' );
-		$about_url      = foam_form_get_page_url( 'about-us', '/about-us/' );
-		$blog_url       = foam_form_get_page_url( 'blog', '/blog/' );
-		$best_seller_url = home_url( '/#best-sellers' );
-		$technology_url = home_url( '/#technology' );
-		$materials_url  = trailingslashit( $about_url ) . '#materials';
-		$reviews_url    = home_url( '/#reviews' );
-		$sofa_beds_url  = foam_form_get_product_category_url( 'compressed-sofa-beds' );
-		$memory_foam_url = foam_form_get_product_category_url( 'mattresses' );
-		$lounge_url     = foam_form_get_product_category_url( 'space-saving-sofas' );
-		$modular_url    = foam_form_get_product_category_url( 'modular-sofas' );
-		$pillow_url     = home_url( '/?s=pillow&post_type=product' );
+		$home_url          = home_url( '/' );
+		$shop_url          = foam_form_get_page_url( 'shop', '/shop/' );
+		$all_products_url  = $shop_url;
+		$cart_url          = foam_form_get_page_url( 'cart', '/cart/' );
+		$account_url       = foam_form_get_page_url( 'my-account', '/my-account/' );
+		$about_url         = foam_form_get_page_url( 'about-us', '/about-us/' );
+		$blog_url          = foam_form_get_page_url( 'blog', '/blog/' );
+		$contact_url       = foam_form_get_page_url( 'contact', '/contact/' );
+		$shipping_url      = foam_form_get_page_url( 'shipping-policy', '/shipping-policy/' );
+		$best_seller_url   = home_url( '/#best-sellers' );
+		$sofa_beds_url     = foam_form_get_product_category_url( 'compressed-sofa-beds' );
+		$memory_foam_url   = foam_form_get_product_category_url( 'mattresses' );
+		$lounge_url        = foam_form_get_product_category_url( 'space-saving-sofas' );
+		$modular_url       = foam_form_get_product_category_url( 'modular-sofas' );
+		$pillow_url        = foam_form_get_product_search_url( 'pillow' );
+		$loveseat_url      = foam_form_get_product_search_url( 'loveseat' );
+		$sale_url          = $shop_url;
+		$new_arrivals_url  = add_query_arg( array( 'orderby' => 'date' ), $shop_url );
+		$bundles_url       = foam_form_get_product_search_url( 'bundle' );
+		$all_sofas_url     = foam_form_get_product_search_url( 'sofa' );
+		$boneless_sofa_url = foam_form_get_product_search_url( 'boneless sofa' );
+		$floor_sofa_url    = foam_form_get_product_search_url( 'floor sofa' );
+		$sectional_url     = foam_form_get_product_search_url( 'sectional sofa' );
+		$ottoman_url       = foam_form_get_product_search_url( 'ottoman' );
+		$accent_chairs_url = foam_form_get_product_search_url( 'accent chair' );
+		$side_tables_url   = foam_form_get_product_search_url( 'side table' );
+		$coffee_tables_url = foam_form_get_product_search_url( 'coffee table' );
+		$all_mattress_url  = foam_form_get_product_search_url( 'mattress' );
+		$hybrid_url        = foam_form_get_product_search_url( 'hybrid mattress' );
+		$topper_url        = foam_form_get_product_search_url( 'mattress topper' );
+		$sleeper_sofas_url = foam_form_get_product_search_url( 'sleeper sofa' );
+		$memory_pillow_url = foam_form_get_product_search_url( 'memory foam pillow' );
+		$cooling_pillow_url = foam_form_get_product_search_url( 'cooling pillow' );
+		$neck_pillow_url   = foam_form_get_product_search_url( 'neck pillow' );
+		$body_pillow_url   = foam_form_get_product_search_url( 'body pillow' );
+		$compact_sofas_url = foam_form_get_product_search_url( 'compact sofa' );
+		$foldable_furniture_url = foam_form_get_product_search_url( 'foldable furniture' );
+		$convertible_furniture_url = foam_form_get_product_search_url( 'convertible furniture' );
+		$storage_solutions_url = foam_form_get_product_search_url( 'storage ottoman' );
+		$pet_stairs_url    = foam_form_get_product_search_url( 'pet stairs' );
+		$pet_ramps_url     = foam_form_get_product_search_url( 'pet ramp' );
+		$pet_beds_url      = foam_form_get_product_search_url( 'pet bed' );
+		$pet_sofas_url     = foam_form_get_product_search_url( 'pet sofa' );
+		$pet_cushions_url  = foam_form_get_product_search_url( 'pet cushion' );
+		$covers_url        = foam_form_get_product_search_url( 'cover' );
+		$cushions_url      = foam_form_get_product_search_url( 'cushion' );
+		$blankets_url      = foam_form_get_product_search_url( 'blanket' );
+		$throw_blankets_url = foam_form_get_product_search_url( 'throw blanket' );
+		$decor_pillows_url = foam_form_get_product_search_url( 'decor pillow' );
+		$living_room_ideas_url = foam_form_get_post_search_url( 'living room ideas' );
+		$small_living_spaces_url = foam_form_get_post_search_url( 'small living spaces' );
+		$family_living_url = foam_form_get_post_search_url( 'family living' );
+		$hosting_inspiration_url = foam_form_get_post_search_url( 'hosting inspiration' );
+		$sleep_better_url  = foam_form_get_post_search_url( 'sleep better' );
+		$guest_room_guide_url = foam_form_get_post_search_url( 'guest room guide' );
+		$foam_technology_url = foam_form_get_post_search_url( 'foam technology' );
+		$studio_apartments_url = foam_form_get_post_search_url( 'studio apartments' );
+		$apartment_living_url = foam_form_get_post_search_url( 'apartment living' );
+		$home_office_url   = foam_form_get_post_search_url( 'home office' );
+		$small_space_guide_url = foam_form_get_post_search_url( 'small space guide' );
+		$living_with_pets_url = foam_form_get_post_search_url( 'living with pets' );
+		$cleaning_guide_url = foam_form_get_post_search_url( 'cleaning guide' );
+		$pet_care_tips_url = foam_form_get_post_search_url( 'pet care tips' );
+		$editors_picks_url = $best_seller_url;
+		$apartment_collection_url = foam_form_get_product_search_url( 'apartment collection' );
+		$minimal_living_url = foam_form_get_post_search_url( 'minimal living' );
+		$guest_ready_url   = foam_form_get_post_search_url( 'guest ready' );
+		$materials_url     = $about_url . '#materials';
+		$sustainability_url = $about_url . '#sustainability';
+		$living_ideas_url  = foam_form_get_post_search_url( 'living ideas' );
+		$interior_styling_url = foam_form_get_post_search_url( 'interior styling' );
+		$buying_guides_url = foam_form_get_post_search_url( 'buying guides' );
+		$furniture_care_url = foam_form_get_post_search_url( 'furniture care' );
+		$foam_education_url = foam_form_get_post_search_url( 'foam education' );
+		$company_news_url  = foam_form_get_post_search_url( 'company news' );
 		$corner_product = get_page_by_path( 'sonovafurn-corner-modular-sofa', OBJECT, 'product' );
-		$corner_url     = $corner_product instanceof WP_Post ? get_permalink( $corner_product ) : $modular_url;
-		$cart_count     = 0;
-		$uploads        = wp_get_upload_dir();
-		$editorial_base = ! empty( $uploads['baseurl'] ) ? trailingslashit( $uploads['baseurl'] ) . '2026/07/' : '';
-		$nav_cards      = array(
-			'Best Seller' => array(
-				'url'   => $best_seller_url,
-				'kicker' => __( 'Curated edit', 'foam-form-studio' ),
-				'thumb' => $editorial_base . 'sonovafurn-editorial-hero-living.jpg',
-				'panel_title' => __( 'Best Seller Edit', 'foam-form-studio' ),
-				'panel_copy'  => __( 'A calmer shortlist of the collection, selected for smaller spaces, easier comparison, and everyday use.', 'foam-form-studio' ),
-				'cards' => array(
+		$corner_url        = $corner_product instanceof WP_Post ? get_permalink( $corner_product ) : $modular_url;
+		$cart_count        = 0;
+		$uploads           = wp_get_upload_dir();
+		$editorial_base    = ! empty( $uploads['baseurl'] ) ? trailingslashit( $uploads['baseurl'] ) . '2026/07/' : '';
+		$nav_cards         = array(
+			'EVERYDAY LIVING' => array(
+				'url'    => $all_sofas_url,
+				'kicker' => __( 'Rooms for daily rituals', 'foam-form-studio' ),
+				'groups' => array(
 					array(
-						'title' => __( 'Top sofa beds', 'foam-form-studio' ),
-						'copy'  => __( 'Convertible forms selected for guest-ready rooms, smaller layouts, and calmer daily use.', 'foam-form-studio' ),
-						'url'   => $best_seller_url,
-						'image' => $editorial_base . 'sonovafurn-editorial-hero-living.jpg',
+						'heading' => __( 'Furniture', 'foam-form-studio' ),
+						'links'   => array(
+							array( 'title' => __( 'Sofa Beds', 'foam-form-studio' ), 'url' => $sofa_beds_url ),
+							array( 'title' => __( 'Loveseats', 'foam-form-studio' ), 'url' => $loveseat_url ),
+							array( 'title' => __( 'Modular Seating', 'foam-form-studio' ), 'url' => $modular_url ),
+							array( 'title' => __( 'Accent Chairs', 'foam-form-studio' ), 'url' => $accent_chairs_url ),
+							array( 'title' => __( 'Ottomans', 'foam-form-studio' ), 'url' => $ottoman_url ),
+						),
 					),
 					array(
-						'title' => __( 'Most considered pieces', 'foam-form-studio' ),
-						'copy'  => __( 'A quieter shortlist of the collection with clearer proportions, softer materials, and easier comparison.', 'foam-form-studio' ),
-						'url'   => $best_seller_url,
-						'image' => $editorial_base . 'sonovafurn-editorial-lifestyle-sofa.jpg',
-					),
-				),
-			),
-			'Compressed Sofa' => array(
-				'url'   => $sofa_beds_url,
-				'kicker' => __( 'Core collection', 'foam-form-studio' ),
-				'thumb' => $editorial_base . 'sonovafurn-editorial-shop-night.jpg',
-				'panel_title' => __( 'Compressed Sofa Beds', 'foam-form-studio' ),
-				'panel_copy'  => __( 'Compressed seating developed for easier delivery, cleaner silhouettes, and calmer apartment living.', 'foam-form-studio' ),
-				'cards' => array(
-					array(
-						'title' => __( 'Sofa Beds', 'foam-form-studio' ),
-						'copy'  => __( 'Compressed seating designed for easier delivery, smaller rooms, and quieter living layouts.', 'foam-form-studio' ),
-						'url'   => $sofa_beds_url,
-						'image' => $editorial_base . 'sonovafurn-editorial-shop-night.jpg',
+						'heading' => __( 'Living Essentials', 'foam-form-studio' ),
+						'links'   => array(
+							array( 'title' => __( 'Throw Blankets', 'foam-form-studio' ), 'url' => $throw_blankets_url ),
+							array( 'title' => __( 'Decor Pillows', 'foam-form-studio' ), 'url' => $decor_pillows_url ),
+							array( 'title' => __( 'Side Tables', 'foam-form-studio' ), 'url' => $side_tables_url ),
+							array( 'title' => __( 'Coffee Tables', 'foam-form-studio' ), 'url' => $coffee_tables_url ),
+						),
 					),
 					array(
-						'title' => __( 'Compact Forms', 'foam-form-studio' ),
-						'copy'  => __( 'Low-stress silhouettes that move more naturally through apartments, stairs, and tighter plans.', 'foam-form-studio' ),
-						'url'   => $lounge_url,
-						'image' => $editorial_base . 'sonovafurn-editorial-hero-living.jpg',
+						'heading' => __( 'Explore', 'foam-form-studio' ),
+						'links'   => array(
+							array( 'title' => __( 'Living Room Ideas', 'foam-form-studio' ), 'url' => $living_room_ideas_url ),
+							array( 'title' => __( 'Small Living Spaces', 'foam-form-studio' ), 'url' => $small_living_spaces_url ),
+							array( 'title' => __( 'Family Living', 'foam-form-studio' ), 'url' => $family_living_url ),
+							array( 'title' => __( 'Hosting Inspiration', 'foam-form-studio' ), 'url' => $hosting_inspiration_url ),
+						),
 					),
 				),
-			),
-			'Pillow' => array(
-				'url'   => $pillow_url,
-				'kicker' => __( 'Soft accents', 'foam-form-studio' ),
-				'thumb' => $editorial_base . 'sonovafurn-editorial-white-sofa.jpg',
-				'panel_title' => __( 'Pillow & Cushion Layer', 'foam-form-studio' ),
-				'panel_copy'  => __( 'A softer future product line prepared for tonal accents, layered comfort, and quieter styling.', 'foam-form-studio' ),
-				'cards' => array(
-					array(
-						'title' => __( 'Accent Pillows', 'foam-form-studio' ),
-						'copy'  => __( 'Prepared as a softer product lane for tonal accents, layered comfort, and future textile add-ons.', 'foam-form-studio' ),
-						'url'   => $pillow_url,
-						'image' => $editorial_base . 'sonovafurn-editorial-white-sofa.jpg',
-					),
-					array(
-						'title' => __( 'Cushion Layer', 'foam-form-studio' ),
-						'copy'  => __( 'A clean placeholder entry for pillows and cushions without crowding the current main sofa story.', 'foam-form-studio' ),
-						'url'   => $pillow_url,
-						'image' => $editorial_base . 'sonovafurn-editorial-lifestyle-sofa.jpg',
-					),
+				'feature' => array(
+					'image'     => $editorial_base . 'sonovafurn-editorial-lifestyle-sofa.jpg',
+					'position'  => 'center center',
+					'meta'      => __( 'Everyday living', 'foam-form-studio' ),
+					'title'     => __( 'Furniture arranged around the softer parts of the day', 'foam-form-studio' ),
+					'copy'      => __( 'Spaces for gathering, stretching out, and moving naturally through the rituals that make a room feel lived in.', 'foam-form-studio' ),
+					'cta_label' => __( 'Explore Living Spaces →', 'foam-form-studio' ),
+					'cta_url'   => $all_sofas_url,
 				),
 			),
-			'Mattress' => array(
-				'url'   => $memory_foam_url,
-				'kicker' => __( 'Sleep support', 'foam-form-studio' ),
-				'thumb' => $editorial_base . 'sonovafurn-editorial-white-sofa.jpg',
-				'panel_title' => __( 'Mattress Collection', 'foam-form-studio' ),
-				'panel_copy'  => __( 'Rolled and boxed memory foam essentials with quieter forms, practical comfort, and cleaner bedrooms.', 'foam-form-studio' ),
-				'cards' => array(
+			'REST & SLEEP' => array(
+				'url'    => $all_mattress_url,
+				'kicker' => __( 'Sleep essentials', 'foam-form-studio' ),
+				'groups' => array(
 					array(
-						'title' => __( 'Memory Foam', 'foam-form-studio' ),
-						'copy'  => __( 'Rolled and boxed sleep essentials with cleaner forms and practical pressure relief.', 'foam-form-studio' ),
-						'url'   => $memory_foam_url,
-						'image' => $editorial_base . 'sonovafurn-editorial-white-sofa.jpg',
+						'heading' => __( 'Products', 'foam-form-studio' ),
+						'links'   => array(
+							array( 'title' => __( 'Mattresses', 'foam-form-studio' ), 'url' => $all_mattress_url ),
+							array( 'title' => __( 'Memory Foam Mattresses', 'foam-form-studio' ), 'url' => $memory_foam_url ),
+							array( 'title' => __( 'Pillows', 'foam-form-studio' ), 'url' => $pillow_url ),
+							array( 'title' => __( 'Mattress Toppers', 'foam-form-studio' ), 'url' => $topper_url ),
+							array( 'title' => __( 'Sleeper Sofas', 'foam-form-studio' ), 'url' => $sleeper_sofas_url ),
+						),
 					),
 					array(
-						'title' => __( 'Bedroom Edit', 'foam-form-studio' ),
-						'copy'  => __( 'A quieter mattress direction prepared for primary rooms, guest rooms, and smaller apartments.', 'foam-form-studio' ),
-						'url'   => $memory_foam_url,
-						'image' => $editorial_base . 'sonovafurn-editorial-hero-living.jpg',
+						'heading' => __( 'Lifestyle Collections', 'foam-form-studio' ),
+						'links'   => array(
+							array( 'title' => __( 'Guest Ready', 'foam-form-studio' ), 'url' => $guest_ready_url ),
+							array( 'title' => __( 'Small Bedrooms', 'foam-form-studio' ), 'url' => $small_space_guide_url ),
+							array( 'title' => __( 'Overnight Hosting', 'foam-form-studio' ), 'url' => $hosting_inspiration_url ),
+						),
+					),
+					array(
+						'heading' => __( 'Editorial', 'foam-form-studio' ),
+						'links'   => array(
+							array( 'title' => __( 'Sleep Better', 'foam-form-studio' ), 'url' => $sleep_better_url ),
+							array( 'title' => __( 'Guest Room Guide', 'foam-form-studio' ), 'url' => $guest_room_guide_url ),
+							array( 'title' => __( 'Foam Technology', 'foam-form-studio' ), 'url' => $foam_technology_url ),
+						),
 					),
 				),
+				'feature' => array(
+					'image'     => $editorial_base . 'sonovafurn-editorial-hero-living.jpg',
+					'position'  => 'center center',
+					'meta'      => __( 'Rest & sleep', 'foam-form-studio' ),
+					'title'     => __( 'Sleep pieces made to feel lighter, calmer, and easier to live with', 'foam-form-studio' ),
+					'copy'      => __( 'From guest-ready sofa beds to softer mattress layers, each format is designed for easier setup and quieter bedrooms.', 'foam-form-studio' ),
+					'cta_label' => __( 'Explore Sleep Essentials →', 'foam-form-studio' ),
+					'cta_url'   => $all_mattress_url,
+				),
 			),
-			'Corner' => array(
-				'url'   => $corner_url,
-				'kicker' => __( 'L-shaped living', 'foam-form-studio' ),
-				'thumb' => $editorial_base . 'sonovafurn-source-04.png',
-				'panel_title' => __( 'Corner Sofa Edit', 'foam-form-studio' ),
-				'panel_copy'  => __( 'Broader modular seating intended for open plans that still benefit from compressed delivery and softer visual weight.', 'foam-form-studio' ),
-				'cards' => array(
+			'SMALL HOME' => array(
+				'url'    => $compact_sofas_url,
+				'kicker' => __( 'Smaller footprints', 'foam-form-studio' ),
+				'groups' => array(
 					array(
-						'title' => __( 'Corner Modular', 'foam-form-studio' ),
-						'copy'  => __( 'Broader corner seating for open plans that still need compressed delivery efficiency.', 'foam-form-studio' ),
-						'url'   => $corner_url,
-						'image' => $editorial_base . 'sonovafurn-source-04.png',
+						'heading' => __( 'Products', 'foam-form-studio' ),
+						'links'   => array(
+							array( 'title' => __( 'Compact Sofas', 'foam-form-studio' ), 'url' => $compact_sofas_url ),
+							array( 'title' => __( 'Foldable Furniture', 'foam-form-studio' ), 'url' => $foldable_furniture_url ),
+							array( 'title' => __( 'Convertible Furniture', 'foam-form-studio' ), 'url' => $convertible_furniture_url ),
+							array( 'title' => __( 'Storage Solutions', 'foam-form-studio' ), 'url' => $storage_solutions_url ),
+						),
 					),
 					array(
-						'title' => __( 'Modular Angle', 'foam-form-studio' ),
-						'copy'  => __( 'A more architectural sofa direction for layouts that need longer seating and softer presence.', 'foam-form-studio' ),
-						'url'   => $modular_url,
-						'image' => $editorial_base . 'sonovafurn-source-03.png',
+						'heading' => __( 'Lifestyle Collections', 'foam-form-studio' ),
+						'links'   => array(
+							array( 'title' => __( 'Studio Apartments', 'foam-form-studio' ), 'url' => $studio_apartments_url ),
+							array( 'title' => __( 'Apartment Living', 'foam-form-studio' ), 'url' => $apartment_living_url ),
+							array( 'title' => __( 'Home Office', 'foam-form-studio' ), 'url' => $home_office_url ),
+						),
 					),
+					array(
+						'heading' => __( 'Guides', 'foam-form-studio' ),
+						'links'   => array(
+							array( 'title' => __( 'Small Space Guide', 'foam-form-studio' ), 'url' => $small_space_guide_url ),
+							array( 'title' => __( 'Living Room Ideas', 'foam-form-studio' ), 'url' => $living_room_ideas_url ),
+							array( 'title' => __( 'Minimal Living', 'foam-form-studio' ), 'url' => $minimal_living_url ),
+						),
+					),
+				),
+				'feature' => array(
+					'image'     => $editorial_base . 'sonovafurn-editorial-shop-night.jpg',
+					'position'  => 'center center',
+					'meta'      => __( 'Small home', 'foam-form-studio' ),
+					'title'     => __( 'Pieces that move easily through tighter plans and changing routines', 'foam-form-studio' ),
+					'copy'      => __( 'Designed for elevators, corners, and multipurpose rooms without losing the sense of comfort a home needs every day.', 'foam-form-studio' ),
+					'cta_label' => __( 'Explore Small Home →', 'foam-form-studio' ),
+					'cta_url'   => $compact_sofas_url,
+				),
+			),
+			'PET COMFORT' => array(
+				'url'    => $pet_beds_url,
+				'kicker' => __( 'Shared living', 'foam-form-studio' ),
+				'groups' => array(
+					array(
+						'heading' => __( 'Products', 'foam-form-studio' ),
+						'links'   => array(
+							array( 'title' => __( 'Pet Beds', 'foam-form-studio' ), 'url' => $pet_beds_url ),
+							array( 'title' => __( 'Pet Sofas', 'foam-form-studio' ), 'url' => $pet_sofas_url ),
+							array( 'title' => __( 'Pet Ramps', 'foam-form-studio' ), 'url' => $pet_ramps_url ),
+							array( 'title' => __( 'Pet Stairs', 'foam-form-studio' ), 'url' => $pet_stairs_url ),
+						),
+					),
+					array(
+						'heading' => __( 'Lifestyle Collections', 'foam-form-studio' ),
+						'links'   => array(
+							array( 'title' => __( 'Living With Pets', 'foam-form-studio' ), 'url' => $living_with_pets_url ),
+							array( 'title' => __( 'Apartment Pets', 'foam-form-studio' ), 'url' => $apartment_living_url ),
+							array( 'title' => __( 'Softer Landings', 'foam-form-studio' ), 'url' => $pet_ramps_url ),
+						),
+					),
+					array(
+						'heading' => __( 'Editorial', 'foam-form-studio' ),
+						'links'   => array(
+							array( 'title' => __( 'Living With Pets', 'foam-form-studio' ), 'url' => $living_with_pets_url ),
+							array( 'title' => __( 'Cleaning Guide', 'foam-form-studio' ), 'url' => $cleaning_guide_url ),
+							array( 'title' => __( 'Pet Care Tips', 'foam-form-studio' ), 'url' => $pet_care_tips_url ),
+						),
+					),
+				),
+				'feature' => array(
+					'image'     => $editorial_base . 'sonovafurn-editorial-lifestyle-sofa.jpg',
+					'position'  => 'center center',
+					'meta'      => __( 'Pet comfort', 'foam-form-studio' ),
+					'title'     => __( 'Foam pieces that keep shared spaces softer and easier to move through', 'foam-form-studio' ),
+					'copy'      => __( 'For companions at home, access pieces and rest layers are designed to feel gentle without crowding the room around them.', 'foam-form-studio' ),
+					'cta_label' => __( 'Explore Pet Comfort →', 'foam-form-studio' ),
+					'cta_url'   => $pet_beds_url,
+				),
+			),
+			'FEATURED COLLECTIONS' => array(
+				'url'    => $best_seller_url,
+				'kicker' => __( 'Curated edits', 'foam-form-studio' ),
+				'groups' => array(
+					array(
+						'heading' => __( 'Product Categories', 'foam-form-studio' ),
+						'links'   => array(
+							array( 'title' => __( 'Editor\'s Picks', 'foam-form-studio' ), 'url' => $editors_picks_url ),
+							array( 'title' => __( 'New Arrivals', 'foam-form-studio' ), 'url' => $new_arrivals_url ),
+							array( 'title' => __( 'Best Sellers', 'foam-form-studio' ), 'url' => $best_seller_url ),
+						),
+					),
+					array(
+						'heading' => __( 'Lifestyle Collections', 'foam-form-studio' ),
+						'links'   => array(
+							array( 'title' => __( 'Apartment Collection', 'foam-form-studio' ), 'url' => $apartment_collection_url ),
+							array( 'title' => __( 'Minimal Living', 'foam-form-studio' ), 'url' => $minimal_living_url ),
+							array( 'title' => __( 'Guest Ready', 'foam-form-studio' ), 'url' => $guest_ready_url ),
+						),
+					),
+					array(
+						'heading' => __( 'Editorial Links', 'foam-form-studio' ),
+						'links'   => array(
+							array( 'title' => __( 'Comfort Journey', 'foam-form-studio' ), 'url' => home_url( '/#comfort-journey' ) ),
+							array( 'title' => __( 'Living Ideas', 'foam-form-studio' ), 'url' => $living_ideas_url ),
+							array( 'title' => __( 'Buying Guides', 'foam-form-studio' ), 'url' => $buying_guides_url ),
+						),
+					),
+				),
+				'feature' => array(
+					'image'     => $editorial_base . 'sonovafurn-best-seller-01.png',
+					'position'  => 'center center',
+					'meta'      => __( 'Featured collections', 'foam-form-studio' ),
+					'title'     => __( 'A calmer way to navigate the pieces that define the brand', 'foam-form-studio' ),
+					'copy'      => __( 'Curated edits bring together softer silhouettes, practical layers, and the rooms they were made to support.', 'foam-form-studio' ),
+					'cta_label' => __( 'Explore Collection →', 'foam-form-studio' ),
+					'cta_url'   => $best_seller_url,
+				),
+			),
+			'ABOUT' => array(
+				'url'    => $about_url,
+				'kicker' => __( 'Brand & materials', 'foam-form-studio' ),
+				'groups' => array(
+					array(
+						'heading' => __( 'Brand', 'foam-form-studio' ),
+						'links'   => array(
+							array( 'title' => __( 'Our Story', 'foam-form-studio' ), 'url' => $about_url ),
+							array( 'title' => __( 'Materials', 'foam-form-studio' ), 'url' => $materials_url ),
+							array( 'title' => __( 'Foam Technology', 'foam-form-studio' ), 'url' => $foam_technology_url ),
+						),
+					),
+					array(
+						'heading' => __( 'Values', 'foam-form-studio' ),
+						'links'   => array(
+							array( 'title' => __( 'Sustainability', 'foam-form-studio' ), 'url' => $sustainability_url ),
+							array( 'title' => __( 'Small Home Living', 'foam-form-studio' ), 'url' => $small_space_guide_url ),
+						),
+					),
+					array(
+						'heading' => __( 'Support', 'foam-form-studio' ),
+						'links'   => array(
+							array( 'title' => __( 'Shipping', 'foam-form-studio' ), 'url' => $shipping_url ),
+							array( 'title' => __( 'Contact', 'foam-form-studio' ), 'url' => $contact_url ),
+							array( 'title' => __( 'Journal', 'foam-form-studio' ), 'url' => $blog_url ),
+						),
+					),
+				),
+				'feature' => array(
+					'image'     => $editorial_base . 'sonovafurn-editorial-white-sofa.jpg',
+					'position'  => 'center center',
+					'meta'      => __( 'About Sonovafurn', 'foam-form-studio' ),
+					'title'     => __( 'Designing softer rooms around smaller homes and everyday use', 'foam-form-studio' ),
+					'copy'      => __( 'The brand story begins with compressed delivery, practical materials, and a quieter approach to modern furniture.', 'foam-form-studio' ),
+					'cta_label' => __( 'Read Our Story →', 'foam-form-studio' ),
+					'cta_url'   => $about_url,
+				),
+			),
+			'JOURNAL' => array(
+				'url'    => $blog_url,
+				'kicker' => __( 'Editorial reading', 'foam-form-studio' ),
+				'groups' => array(
+					array(
+						'heading' => __( 'Topics', 'foam-form-studio' ),
+						'links'   => array(
+							array( 'title' => __( 'Living Ideas', 'foam-form-studio' ), 'url' => $living_ideas_url ),
+							array( 'title' => __( 'Interior Styling', 'foam-form-studio' ), 'url' => $interior_styling_url ),
+							array( 'title' => __( 'Buying Guides', 'foam-form-studio' ), 'url' => $buying_guides_url ),
+						),
+					),
+					array(
+						'heading' => __( 'Care & Materials', 'foam-form-studio' ),
+						'links'   => array(
+							array( 'title' => __( 'Furniture Care', 'foam-form-studio' ), 'url' => $furniture_care_url ),
+							array( 'title' => __( 'Foam Education', 'foam-form-studio' ), 'url' => $foam_education_url ),
+						),
+					),
+					array(
+						'heading' => __( 'From the Brand', 'foam-form-studio' ),
+						'links'   => array(
+							array( 'title' => __( 'Company News', 'foam-form-studio' ), 'url' => $company_news_url ),
+							array( 'title' => __( 'Comfort Journey', 'foam-form-studio' ), 'url' => home_url( '/#comfort-journey' ) ),
+						),
+					),
+				),
+				'feature' => array(
+					'image'     => $editorial_base . 'sonovafurn-source-02.jpg',
+					'position'  => 'center center',
+					'meta'      => __( 'Journal', 'foam-form-studio' ),
+					'title'     => __( 'Stories for arranging calmer rooms and softer routines', 'foam-form-studio' ),
+					'copy'      => __( 'Interior notes, buying guides, and material details written to feel more like a magazine than a product catalog.', 'foam-form-studio' ),
+					'cta_label' => __( 'Read the Journal →', 'foam-form-studio' ),
+					'cta_url'   => $blog_url,
 				),
 			),
 		);
@@ -312,60 +910,111 @@ add_action(
 					<span class="foam-site-brand__wordmark">Sonovafurn</span>
 				</a>
 
-				<nav class="foam-site-nav" aria-label="<?php esc_attr_e( 'Main navigation', 'foam-form-studio' ); ?>">
+				<nav class="foam-site-nav" id="foam-site-nav-main" aria-label="<?php esc_attr_e( 'Main navigation', 'foam-form-studio' ); ?>">
 					<?php foreach ( $nav_cards as $label => $item ) : ?>
-						<div class="foam-site-nav-item">
+						<?php $has_panel = ! empty( $item['groups'] ); ?>
+						<div class="foam-site-nav-item<?php echo $has_panel ? '' : ' foam-site-nav-item--simple'; ?>" data-nav-item="<?php echo esc_attr( sanitize_title( $label ) ); ?>">
 							<a class="foam-site-nav__trigger" href="<?php echo esc_url( $item['url'] ); ?>">
 								<span class="foam-site-nav__label-group">
 									<strong><?php echo esc_html( $label ); ?></strong>
 								</span>
 							</a>
-							<?php
-							$panel_thumb = ! empty( $item['thumb'] ) ? $item['thumb'] : '';
+							<?php if ( $has_panel ) : ?>
+								<?php
+								$feature         = ! empty( $item['feature'] ) ? $item['feature'] : array();
+								$panel_thumb     = ! empty( $feature['image'] ) ? $feature['image'] : '';
+								$panel_title     = ! empty( $feature['title'] ) ? $feature['title'] : $label;
+								$panel_copy      = ! empty( $feature['copy'] ) ? $feature['copy'] : $item['kicker'];
+								$panel_meta      = ! empty( $feature['meta'] ) ? $feature['meta'] : $label;
+								$panel_cta_label = ! empty( $feature['cta_label'] ) ? $feature['cta_label'] : __( 'Explore Collection →', 'foam-form-studio' );
+								$panel_cta_url   = ! empty( $feature['cta_url'] ) ? $feature['cta_url'] : $item['url'];
+								$feature_style   = '';
 
-							if ( empty( $panel_thumb ) ) {
-								foreach ( $item['cards'] as $card ) {
-									if ( ! empty( $card['image'] ) ) {
-										$panel_thumb = $card['image'];
-										break;
+								if ( ! empty( $panel_thumb ) ) {
+									$feature_style = "background-image: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(17,17,17,0.08) 48%, rgba(17,17,17,0.22) 100%), url('" . esc_url( $panel_thumb ) . "');";
+
+									if ( ! empty( $feature['position'] ) ) {
+										$feature_style .= ' background-position: ' . sanitize_text_field( $feature['position'] ) . ';';
 									}
 								}
-							}
 
-							$panel_title = ! empty( $item['panel_title'] ) ? $item['panel_title'] : $label;
-							$panel_copy  = ! empty( $item['panel_copy'] ) ? $item['panel_copy'] : $item['kicker'];
-							?>
-							<div class="foam-site-nav-panel">
-								<div class="foam-site-nav-panel__grid">
-									<div class="foam-site-nav-menu">
-										<span class="foam-site-nav-menu__eyebrow"><?php echo esc_html( $item['kicker'] ); ?></span>
-										<div class="foam-site-nav-menu__list">
-											<?php foreach ( $item['cards'] as $card ) : ?>
-												<a class="foam-site-nav-menu__link" href="<?php echo esc_url( $card['url'] ); ?>">
-													<strong><?php echo esc_html( $card['title'] ); ?></strong>
-												</a>
-											<?php endforeach; ?>
+								$item_slug = sanitize_title( $label );
+								?>
+								<div class="foam-site-nav-panel">
+									<div class="foam-site-nav-panel__grid">
+										<div class="foam-site-nav-columns">
+											<div class="foam-site-nav-subnav" aria-label="<?php echo esc_attr( $label ); ?>">
+												<?php foreach ( $item['groups'] as $group_index => $group ) : ?>
+													<?php $group_id = $item_slug . '-group-' . $group_index; ?>
+													<button
+														class="foam-site-nav-subnav__button<?php echo 0 === $group_index ? ' is-active' : ''; ?>"
+														type="button"
+														data-group-target="<?php echo esc_attr( $group_id ); ?>"
+														aria-controls="<?php echo esc_attr( $group_id ); ?>"
+														aria-pressed="<?php echo 0 === $group_index ? 'true' : 'false'; ?>"
+													>
+														<span><?php echo esc_html( $group['heading'] ); ?></span>
+													</button>
+												<?php endforeach; ?>
+											</div>
+											<div class="foam-site-nav-stage">
+												<?php foreach ( $item['groups'] as $group_index => $group ) : ?>
+													<?php $group_id = $item_slug . '-group-' . $group_index; ?>
+													<div
+														class="foam-site-nav-stage__panel<?php echo 0 === $group_index ? ' is-active' : ''; ?>"
+														data-group-panel="<?php echo esc_attr( $group_id ); ?>"
+														id="<?php echo esc_attr( $group_id ); ?>"
+														<?php echo 0 === $group_index ? '' : ' hidden'; ?>
+													>
+														<span class="foam-site-nav-stage__eyebrow"><?php echo esc_html( $group['heading'] ); ?></span>
+														<div class="foam-site-nav-menu__list">
+															<?php foreach ( $group['links'] as $link_index => $card ) : ?>
+																<a
+																	class="foam-site-nav-menu__link"
+																	href="<?php echo esc_url( $card['url'] ); ?>"
+																	data-preview-image="<?php echo esc_attr( ! empty( $card['preview_image'] ) ? $card['preview_image'] : $panel_thumb ); ?>"
+																	data-preview-title="<?php echo esc_attr( ! empty( $card['preview_title'] ) ? $card['preview_title'] : $card['title'] ); ?>"
+																	data-preview-copy="<?php echo esc_attr( ! empty( $card['preview_copy'] ) ? $card['preview_copy'] : $panel_copy ); ?>"
+																	data-preview-meta="<?php echo esc_attr( ! empty( $card['preview_meta'] ) ? $card['preview_meta'] : $group['heading'] ); ?>"
+																	data-preview-url="<?php echo esc_attr( $card['url'] ); ?>"
+																	data-group-parent="<?php echo esc_attr( $group_id ); ?>"
+																	<?php echo ( 0 === $group_index && 0 === $link_index ) ? ' data-preview-default="true"' : ''; ?>
+																	<?php echo 0 === $link_index ? ' data-group-default="true"' : ''; ?>
+																>
+																	<strong><?php echo esc_html( $card['title'] ); ?></strong>
+																</a>
+															<?php endforeach; ?>
+														</div>
+													</div>
+												<?php endforeach; ?>
+											</div>
+										</div>
+										<div
+											class="foam-site-nav-feature"
+											data-default-image="<?php echo esc_attr( $panel_thumb ); ?>"
+											data-default-title="<?php echo esc_attr( $panel_title ); ?>"
+											data-default-copy="<?php echo esc_attr( $panel_copy ); ?>"
+											data-default-meta="<?php echo esc_attr( $panel_meta ); ?>"
+											data-default-url="<?php echo esc_attr( $panel_cta_url ); ?>"
+											<?php echo $feature_style ? ' style="' . esc_attr( $feature_style ) . '"' : ''; ?>
+										>
+											<div class="foam-site-nav-feature__body">
+												<span class="foam-site-nav-feature__meta"><?php echo esc_html( $panel_meta ); ?></span>
+												<strong><?php echo esc_html( $panel_title ); ?></strong>
+												<em><?php echo esc_html( $panel_copy ); ?></em>
+												<a class="foam-site-nav-feature__cta" href="<?php echo esc_url( $panel_cta_url ); ?>"><?php echo esc_html( $panel_cta_label ); ?></a>
+											</div>
 										</div>
 									</div>
-									<?php
-									$feature_classes = 'foam-site-nav-feature';
-									$feature_style   = '';
-
-									if ( ! empty( $panel_thumb ) ) {
-										$feature_style = "background-image: linear-gradient(180deg, rgba(17, 17, 17, 0.03), rgba(17, 17, 17, 0.26)), url('" . esc_url( $panel_thumb ) . "');";
-									} else {
-										$feature_classes .= ' foam-site-nav-feature--blank';
-									}
-									?>
-									<a class="<?php echo esc_attr( $feature_classes ); ?>" href="<?php echo esc_url( $item['url'] ); ?>"<?php echo $feature_style ? ' style="' . esc_attr( $feature_style ) . '"' : ''; ?>>
-										<span class="foam-site-nav-feature__meta"><?php echo esc_html( $label ); ?></span>
-										<strong><?php echo esc_html( $panel_title ); ?></strong>
-										<em><?php echo esc_html( $panel_copy ); ?></em>
-									</a>
 								</div>
-							</div>
+							<?php endif; ?>
 						</div>
 					<?php endforeach; ?>
+					<div class="foam-site-nav-mobile-links">
+						<a class="foam-site-nav-mobile-link" href="<?php echo esc_url( $account_url ); ?>">
+							<?php esc_html_e( 'My Account', 'foam-form-studio' ); ?>
+						</a>
+					</div>
 				</nav>
 
 				<div class="foam-site-actions">
@@ -387,6 +1036,13 @@ add_action(
 						</svg>
 						<span><?php esc_html_e( 'Account', 'foam-form-studio' ); ?></span>
 					</a>
+					<button class="foam-icon-button foam-menu-toggle" type="button" aria-expanded="false" aria-controls="foam-site-nav-main" aria-label="<?php esc_attr_e( 'Open menu', 'foam-form-studio' ); ?>">
+						<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+							<path d="M5 7.5h14" />
+							<path d="M5 12h14" />
+							<path d="M5 16.5h14" />
+						</svg>
+					</button>
 				</div>
 			</div>
 		</header>
@@ -510,6 +1166,167 @@ add_action(
 		<?php
 	},
 	5
+);
+
+add_action(
+	'wp_footer',
+	function () {
+		if ( ! foam_form_should_load_design_lab() ) {
+			return;
+		}
+		?>
+		<div class="foam-design-lab" data-foam-design-lab>
+			<button class="foam-design-lab__toggle" type="button" data-foam-design-lab-toggle aria-expanded="false">
+				<span><?php esc_html_e( 'Design Lab', 'foam-form-studio' ); ?></span>
+			</button>
+			<div class="foam-design-lab__panel" data-foam-design-lab-panel hidden>
+				<div class="foam-design-lab__header">
+					<div>
+						<p class="foam-design-lab__eyebrow"><?php esc_html_e( 'Live style controls', 'foam-form-studio' ); ?></p>
+						<h3><?php esc_html_e( 'Page Design Toolbar', 'foam-form-studio' ); ?></h3>
+					</div>
+					<button class="foam-design-lab__close" type="button" data-foam-design-lab-close aria-label="<?php esc_attr_e( 'Close design toolbar', 'foam-form-studio' ); ?>"></button>
+				</div>
+
+				<div class="foam-design-lab__meta">
+					<div class="foam-design-lab__meta-card">
+						<span><?php esc_html_e( 'Page', 'foam-form-studio' ); ?></span>
+						<strong data-foam-design-page-title></strong>
+					</div>
+					<div class="foam-design-lab__meta-grid">
+						<div class="foam-design-lab__meta-card">
+							<span><?php esc_html_e( 'Template', 'foam-form-studio' ); ?></span>
+							<strong data-foam-design-template></strong>
+						</div>
+						<div class="foam-design-lab__meta-card">
+							<span><?php esc_html_e( 'Type', 'foam-form-studio' ); ?></span>
+							<strong data-foam-design-page-type></strong>
+						</div>
+						<div class="foam-design-lab__meta-card">
+							<span><?php esc_html_e( 'Page ID', 'foam-form-studio' ); ?></span>
+							<strong data-foam-design-page-id></strong>
+						</div>
+						<div class="foam-design-lab__meta-card">
+							<span><?php esc_html_e( 'Path', 'foam-form-studio' ); ?></span>
+							<strong data-foam-design-page-path></strong>
+						</div>
+					</div>
+					<p class="foam-design-lab__classes" data-foam-design-body-classes></p>
+				</div>
+
+				<div class="foam-design-lab__section">
+					<div class="foam-design-lab__section-heading">
+						<h4><?php esc_html_e( 'Typography', 'foam-form-studio' ); ?></h4>
+					</div>
+					<div class="foam-design-lab__controls">
+						<label class="foam-design-lab__control">
+							<span><?php esc_html_e( 'Hero font', 'foam-form-studio' ); ?></span>
+							<input type="text" data-foam-design-control data-css-var="--foam-font-hero">
+						</label>
+						<label class="foam-design-lab__control">
+							<span><?php esc_html_e( 'Section heading font', 'foam-form-studio' ); ?></span>
+							<input type="text" data-foam-design-control data-css-var="--foam-font-heading">
+						</label>
+						<label class="foam-design-lab__control">
+							<span><?php esc_html_e( 'Body font', 'foam-form-studio' ); ?></span>
+							<input type="text" data-foam-design-control data-css-var="--foam-font-body">
+						</label>
+						<label class="foam-design-lab__control">
+							<span><?php esc_html_e( 'Navigation font', 'foam-form-studio' ); ?></span>
+							<input type="text" data-foam-design-control data-css-var="--foam-font-nav">
+						</label>
+						<label class="foam-design-lab__control">
+							<span><?php esc_html_e( 'Button font', 'foam-form-studio' ); ?></span>
+							<input type="text" data-foam-design-control data-css-var="--foam-font-button">
+						</label>
+						<label class="foam-design-lab__control">
+							<span><?php esc_html_e( 'Specs font', 'foam-form-studio' ); ?></span>
+							<input type="text" data-foam-design-control data-css-var="--foam-font-spec">
+						</label>
+					</div>
+				</div>
+
+				<div class="foam-design-lab__section">
+					<div class="foam-design-lab__section-heading">
+						<h4><?php esc_html_e( 'Color', 'foam-form-studio' ); ?></h4>
+					</div>
+					<div class="foam-design-lab__controls foam-design-lab__controls--compact">
+						<label class="foam-design-lab__control">
+							<span><?php esc_html_e( 'Page background', 'foam-form-studio' ); ?></span>
+							<input type="color" data-foam-design-control data-css-var="--foam-color-bg">
+						</label>
+						<label class="foam-design-lab__control">
+							<span><?php esc_html_e( 'Surface', 'foam-form-studio' ); ?></span>
+							<input type="color" data-foam-design-control data-css-var="--foam-color-surface">
+						</label>
+						<label class="foam-design-lab__control">
+							<span><?php esc_html_e( 'Text', 'foam-form-studio' ); ?></span>
+							<input type="color" data-foam-design-control data-css-var="--foam-color-text">
+						</label>
+					</div>
+				</div>
+
+				<div class="foam-design-lab__section">
+					<div class="foam-design-lab__section-heading">
+						<h4><?php esc_html_e( 'Spacing', 'foam-form-studio' ); ?></h4>
+					</div>
+					<div class="foam-design-lab__controls">
+						<label class="foam-design-lab__control">
+							<span><?php esc_html_e( 'Body letter spacing', 'foam-form-studio' ); ?></span>
+							<div class="foam-design-lab__range-row">
+								<input type="range" min="-0.02" max="0.04" step="0.001" data-unit="em" data-foam-design-control data-css-var="--foam-letter-body">
+								<output data-foam-design-value></output>
+							</div>
+						</label>
+						<label class="foam-design-lab__control">
+							<span><?php esc_html_e( 'Heading letter spacing', 'foam-form-studio' ); ?></span>
+							<div class="foam-design-lab__range-row">
+								<input type="range" min="-0.04" max="0.04" step="0.001" data-unit="em" data-foam-design-control data-css-var="--foam-letter-heading">
+								<output data-foam-design-value></output>
+							</div>
+						</label>
+						<label class="foam-design-lab__control">
+							<span><?php esc_html_e( 'Display letter spacing', 'foam-form-studio' ); ?></span>
+							<div class="foam-design-lab__range-row">
+								<input type="range" min="-0.05" max="0.04" step="0.001" data-unit="em" data-foam-design-control data-css-var="--foam-letter-display">
+								<output data-foam-design-value></output>
+							</div>
+						</label>
+						<label class="foam-design-lab__control">
+							<span><?php esc_html_e( 'UI letter spacing', 'foam-form-studio' ); ?></span>
+							<div class="foam-design-lab__range-row">
+								<input type="range" min="-0.03" max="0.04" step="0.001" data-unit="em" data-foam-design-control data-css-var="--foam-letter-ui-title">
+								<output data-foam-design-value></output>
+							</div>
+						</label>
+						<label class="foam-design-lab__control">
+							<span><?php esc_html_e( 'Body line height', 'foam-form-studio' ); ?></span>
+							<div class="foam-design-lab__range-row">
+								<input type="range" min="1.3" max="2.1" step="0.01" data-foam-design-control data-css-var="--foam-line-body">
+								<output data-foam-design-value></output>
+							</div>
+						</label>
+						<label class="foam-design-lab__control">
+							<span><?php esc_html_e( 'Display line height', 'foam-form-studio' ); ?></span>
+							<div class="foam-design-lab__range-row">
+								<input type="range" min="0.9" max="1.4" step="0.01" data-foam-design-control data-css-var="--foam-line-display">
+								<output data-foam-design-value></output>
+							</div>
+						</label>
+					</div>
+				</div>
+
+				<div class="foam-design-lab__actions">
+					<button class="foam-design-lab__action" type="button" data-foam-design-copy><?php esc_html_e( 'Copy CSS', 'foam-form-studio' ); ?></button>
+					<button class="foam-design-lab__action foam-design-lab__action--ghost" type="button" data-foam-design-reset><?php esc_html_e( 'Reset', 'foam-form-studio' ); ?></button>
+				</div>
+
+				<pre class="foam-design-lab__export" data-foam-design-export></pre>
+			</div>
+		</div>
+		<?php
+	},
+	45
 );
 
 add_action(
