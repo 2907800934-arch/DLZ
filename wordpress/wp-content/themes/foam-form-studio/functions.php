@@ -581,6 +581,11 @@ add_action(
 		$blankets_url      = foam_form_get_product_search_url( 'blanket' );
 		$throw_blankets_url = foam_form_get_product_search_url( 'throw blanket' );
 		$decor_pillows_url = foam_form_get_product_search_url( 'decor pillow' );
+		$daybeds_url       = foam_form_get_product_search_url( 'daybed' );
+		$chaise_lounges_url = foam_form_get_product_search_url( 'chaise lounge' );
+		$floor_loungers_url = foam_form_get_product_search_url( 'floor lounger' );
+		$living_room_sets_url = foam_form_get_product_search_url( 'living room set' );
+		$shop_by_space_url = foam_form_get_post_search_url( 'shop by space' );
 		$living_room_ideas_url = foam_form_get_post_search_url( 'living room ideas' );
 		$small_living_spaces_url = foam_form_get_post_search_url( 'small living spaces' );
 		$family_living_url = foam_form_get_post_search_url( 'family living' );
@@ -618,31 +623,40 @@ add_action(
 				'kicker' => __( 'Rooms for daily rituals', 'foam-form-studio' ),
 				'groups' => array(
 					array(
-						'heading' => __( 'Furniture', 'foam-form-studio' ),
+						'heading' => __( 'Seating', 'foam-form-studio' ),
 						'links'   => array(
-							array( 'title' => __( 'Sofa Beds', 'foam-form-studio' ), 'url' => $sofa_beds_url ),
-							array( 'title' => __( 'Loveseats', 'foam-form-studio' ), 'url' => $loveseat_url ),
+							array( 'title' => __( 'Sofas', 'foam-form-studio' ), 'url' => $all_sofas_url ),
 							array( 'title' => __( 'Modular Seating', 'foam-form-studio' ), 'url' => $modular_url ),
+							array( 'title' => __( 'Loveseats', 'foam-form-studio' ), 'url' => $loveseat_url ),
 							array( 'title' => __( 'Accent Chairs', 'foam-form-studio' ), 'url' => $accent_chairs_url ),
 							array( 'title' => __( 'Ottomans', 'foam-form-studio' ), 'url' => $ottoman_url ),
 						),
 					),
 					array(
-						'heading' => __( 'Living Essentials', 'foam-form-studio' ),
+						'heading' => __( 'Convertible Comfort', 'foam-form-studio' ),
 						'links'   => array(
-							array( 'title' => __( 'Throw Blankets', 'foam-form-studio' ), 'url' => $throw_blankets_url ),
-							array( 'title' => __( 'Decor Pillows', 'foam-form-studio' ), 'url' => $decor_pillows_url ),
-							array( 'title' => __( 'Side Tables', 'foam-form-studio' ), 'url' => $side_tables_url ),
-							array( 'title' => __( 'Coffee Tables', 'foam-form-studio' ), 'url' => $coffee_tables_url ),
+							array( 'title' => __( 'Sofa Beds', 'foam-form-studio' ), 'url' => $sofa_beds_url ),
+							array( 'title' => __( 'Daybeds', 'foam-form-studio' ), 'url' => $daybeds_url ),
+							array( 'title' => __( 'Chaise Lounges', 'foam-form-studio' ), 'url' => $chaise_lounges_url ),
+							array( 'title' => __( 'Floor Loungers', 'foam-form-studio' ), 'url' => $floor_loungers_url ),
 						),
 					),
 					array(
-						'heading' => __( 'Explore', 'foam-form-studio' ),
+						'heading' => __( 'Living Essentials', 'foam-form-studio' ),
 						'links'   => array(
-							array( 'title' => __( 'Living Room Ideas', 'foam-form-studio' ), 'url' => $living_room_ideas_url ),
-							array( 'title' => __( 'Small Living Spaces', 'foam-form-studio' ), 'url' => $small_living_spaces_url ),
-							array( 'title' => __( 'Family Living', 'foam-form-studio' ), 'url' => $family_living_url ),
-							array( 'title' => __( 'Hosting Inspiration', 'foam-form-studio' ), 'url' => $hosting_inspiration_url ),
+							array( 'title' => __( 'Cushions', 'foam-form-studio' ), 'url' => $cushions_url ),
+							array( 'title' => __( 'Throws', 'foam-form-studio' ), 'url' => $throw_blankets_url ),
+							array( 'title' => __( 'Coffee Tables', 'foam-form-studio' ), 'url' => $coffee_tables_url ),
+							array( 'title' => __( 'Side Tables', 'foam-form-studio' ), 'url' => $side_tables_url ),
+						),
+					),
+					array(
+						'heading' => __( 'The Living Edit', 'foam-form-studio' ),
+						'links'   => array(
+							array( 'title' => __( 'New Arrivals', 'foam-form-studio' ), 'url' => $new_arrivals_url ),
+							array( 'title' => __( 'Best Sellers', 'foam-form-studio' ), 'url' => $best_seller_url ),
+							array( 'title' => __( 'Living Room Sets', 'foam-form-studio' ), 'url' => $living_room_sets_url ),
+							array( 'title' => __( 'Shop by Space', 'foam-form-studio' ), 'url' => $shop_by_space_url ),
 						),
 					),
 				),
