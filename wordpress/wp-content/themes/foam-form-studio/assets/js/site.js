@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const navItems = Array.from(document.querySelectorAll(".foam-site-nav-item"));
   let closeNavTimer = null;
   const closingTimers = new WeakMap();
-  const closingDuration = 140;
+  const closingDuration = 280;
   const updateNavOpenState = () => {
     const hasOpenItem = navItems.some((item) => item.classList.contains("is-open"));
 
@@ -482,6 +482,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const groupButtons = Array.from(panel.querySelectorAll(".foam-site-nav-subnav__button"));
     const groupPanels = Array.from(panel.querySelectorAll(".foam-site-nav-stage__panel"));
     const links = Array.from(panel.querySelectorAll(".foam-site-nav-menu__link"));
+    const panelHideTimers = new WeakMap();
+    let activeGroupKey = "";
+    let activeFeatureUrl = "";
 
     if (!feature || !links.length) {
       return;
@@ -516,6 +519,13 @@ document.addEventListener("DOMContentLoaded", () => {
       const nextCopy = link?.dataset.previewCopy || defaultState.copy;
       const nextMeta = link?.dataset.previewMeta || defaultState.meta;
       const nextUrl = link?.dataset.previewUrl || defaultState.url;
+      const nextFeatureKey = `${image}|${nextTitle}|${nextCopy}|${nextMeta}|${nextUrl}`;
+
+      if (nextFeatureKey === activeFeatureUrl) {
+        return;
+      }
+
+      activeFeatureUrl = nextFeatureKey;
 
       feature.classList.add("is-switching");
 
@@ -542,8 +552,10 @@ document.addEventListener("DOMContentLoaded", () => {
           cta.setAttribute("href", nextUrl);
         }
 
-        feature.classList.remove("is-switching");
-      }, 110);
+        window.setTimeout(() => {
+          feature.classList.remove("is-switching");
+        }, 90);
+      }, 160);
     };
 
     const setActiveLink = (activeLink) => {
@@ -559,6 +571,12 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
+      if (groupKey === activeGroupKey && syncFeature) {
+        return;
+      }
+
+      activeGroupKey = groupKey;
+
       groupButtons.forEach((button) => {
         const isActive = button.dataset.groupTarget === groupKey;
         button.classList.toggle("is-active", isActive);
@@ -567,8 +585,36 @@ document.addEventListener("DOMContentLoaded", () => {
 
       groupPanels.forEach((groupPanel) => {
         const isActive = groupPanel.dataset.groupPanel === groupKey;
+        const hideTimer = panelHideTimers.get(groupPanel);
+
+        if (hideTimer) {
+          window.clearTimeout(hideTimer);
+          panelHideTimers.delete(groupPanel);
+        }
+
+        if (isActive) {
+          groupPanel.hidden = false;
+          groupPanel.setAttribute("aria-hidden", "false");
+
+          window.requestAnimationFrame(() => {
+            groupPanel.classList.add("is-active");
+          });
+
+          return;
+        }
+
         groupPanel.classList.toggle("is-active", isActive);
-        groupPanel.hidden = !isActive;
+        groupPanel.setAttribute("aria-hidden", "true");
+
+        const timer = window.setTimeout(() => {
+          if (!groupPanel.classList.contains("is-active")) {
+            groupPanel.hidden = true;
+          }
+
+          panelHideTimers.delete(groupPanel);
+        }, 380);
+
+        panelHideTimers.set(groupPanel, timer);
       });
 
       if (syncFeature) {
